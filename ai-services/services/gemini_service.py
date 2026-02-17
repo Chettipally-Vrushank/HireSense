@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import vertexai
 from vertexai.generative_models import GenerativeModel
 
-PROJECT_ID = "hiresense-487704"
+PROJECT_ID = os.getenv("GOOGLE_PROJECT_ID")
 LOCATION = "us-central1"
 
 load_dotenv()
