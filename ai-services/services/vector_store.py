@@ -7,11 +7,14 @@ load_dotenv()
 pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
 index = pc.Index("hiresense-index")
 
+
 def upsert_resume_skills(skills):
     records = [
         {
             "id": f"resume-skill-{i}",
-            "text": skill
+            "inputs": {
+                "text": skill
+            }
         }
         for i, skill in enumerate(skills)
     ]
@@ -26,7 +29,9 @@ def query_skill(skill, top_k=1):
     result = index.search(
         namespace="resume",
         query={
-            "text": skill,
+            "inputs": {
+                "text": skill
+            },
             "top_k": top_k
         }
     )
