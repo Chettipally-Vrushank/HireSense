@@ -26,3 +26,12 @@ async def parse_resume_pdf(file: UploadFile = File(...)):
             text += extracted
 
     return parse_resume(text)
+from agents.jd_agent import parse_job_description
+from pydantic import BaseModel
+
+class JDRequest(BaseModel):
+    jd_text: str
+
+@app.post("/ai/parse-jd")
+def parse_jd_api(data: JDRequest):
+    return parse_job_description(data.jd_text)
