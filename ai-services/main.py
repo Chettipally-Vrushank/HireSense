@@ -35,3 +35,12 @@ class JDRequest(BaseModel):
 @app.post("/ai/parse-jd")
 def parse_jd_api(data: JDRequest):
     return parse_job_description(data.jd_text)
+from services.vector_store import upsert_resume_skills
+
+class ResumeSkillsRequest(BaseModel):
+    skills: list
+
+@app.post("/ai/store-resume-skills")
+def store_resume_skills(data: ResumeSkillsRequest):
+    upsert_resume_skills(data.skills)
+    return {"status": "Resume skills stored in Pinecone"}
