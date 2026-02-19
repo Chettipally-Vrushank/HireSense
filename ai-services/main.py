@@ -2,8 +2,17 @@ from fastapi import FastAPI, UploadFile, File
 from pydantic import BaseModel
 import PyPDF2
 from agents.resume_agent import parse_resume
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # 🔹 Option 1 – Resume as raw text
 class ResumeTextRequest(BaseModel):

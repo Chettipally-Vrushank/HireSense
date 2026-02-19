@@ -12,7 +12,7 @@ def parse_resume(resume_text: str):
     Required format:
     {{
         "name": "",
-        "programming_languages": [],
+        "skills": [],
         "projects": [],
         "cgpa": ""
     }}

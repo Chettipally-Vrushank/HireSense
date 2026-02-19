@@ -1,65 +1,200 @@
-import Image from "next/image";
+"use client"
+
+import { useState } from "react"
 
 export default function Home() {
+  const [file, setFile] = useState<File | null>(null)
+  const [jdText, setJdText] = useState("")
+  const [result, setResult] = useState<any>(null)
+  const [loading, setLoading] = useState(false)
+
+  const handleAnalyze = async () => {
+    if (!file || !jdText) return
+
+    setLoading(true)
+
+    try {
+      // 1️⃣ Parse Resume
+      const formData = new FormData()
+      formData.append("file", file)
+
+      const resumeRes = await fetch("http://localhost:8000/ai/parse-resume-pdf", {
+        method: "POST",
+        body: formData,
+      })
+      const resumeData = await resumeRes.json()
+
+      // Extract skills (handling different naming conventions from the agent)
+      const resumeSkills = resumeData.skills || resumeData.programming_languages || []
+      console.log("Extracted Resume Skills:", resumeSkills)
+
+      // 2️⃣ Store Resume Skills in Vector DB
+      await fetch("http://localhost:8000/ai/store-resume-skills", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ skills: resumeSkills }),
+      })
+
+      // 3️⃣ Parse JD
+      const jdResponse = await fetch("http://localhost:8000/ai/parse-jd", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jd_text: jdText }),
+      })
+
+      const jdData = await jdResponse.json()
+      console.log("JD Data:", jdData)
+
+      if (!jdData.required_skills && !jdData.optional_skills) {
+        console.error("Invalid JD Data Format", jdData)
+        setLoading(false)
+        return
+      }
+
+      const jdSkills = [...(jdData.required_skills || []), ...(jdData.optional_skills || [])]
+
+      // 4️⃣ Match
+      const matchResponse = await fetch("http://localhost:8000/ai/match", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jd_skills: jdSkills }),
+      })
+
+      const matchData = await matchResponse.json()
+      setResult(matchData)
+    } catch (error) {
+      console.error("Error during analysis:", error)
+      alert("An error occurred during analysis.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="p-10 max-w-3xl mx-auto">
+      <h1 className="text-3xl font-bold mb-6">HireSense AI</h1>
+
+      <div className="space-y-4 mb-6">
+        <div>
+          <label className="block text-sm font-medium mb-1">Upload Resume (PDF)</label>
+          <input
+            type="file"
+            onChange={(e) => setFile(e.target.files?.[0] || null)}
+            className="block w-full text-sm text-slate-500
+              file:mr-4 file:py-2 file:px-4
+              file:rounded-full file:border-0
+              file:text-sm file:font-semibold
+              file:bg-blue-50 file:text-blue-700
+              hover:file:bg-blue-100
+            "
+          />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">Job Description</label>
+          <textarea
+            placeholder="Paste Job Description here..."
+            className="w-full border rounded-lg p-3 h-40 focus:ring-2 focus:ring-blue-500 outline-none"
+            value={jdText}
+            onChange={(e) => setJdText(e.target.value)}
+          />
         </div>
-      </main>
+
+        <button
+          onClick={handleAnalyze}
+          disabled={loading || !file || !jdText}
+          className={`w-full py-3 rounded-lg text-white font-semibold transition-colors ${loading || !file || !jdText
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700"
+            }`}
+        >
+          {loading ? "Analyzing..." : "Analyze Match"}
+        </button>
+      </div>
+
+      {result && (
+        <div className="mt-8 border-t pt-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold">Analysis Result</h2>
+            <div className="text-xl font-semibold px-4 py-2 bg-blue-100 text-blue-800 rounded-full">
+              Fit Score: {result.fit_score}%
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-green-50 p-4 rounded-xl border border-green-100">
+              <h3 className="font-semibold text-green-800 mb-3 flex items-center">
+                ✅ Matched Skills
+              </h3>
+              {result.matched_skills.length > 0 ? (
+                <ul className="space-y-2">
+                  {result.matched_skills.map((skill: string, i: number) => (
+                    <li key={i} className="flex items-center text-green-700">
+                      <span className="mr-2">•</span> {skill}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-green-600 italic">No direct matches found.</p>
+              )}
+            </div>
+
+            <div className="bg-red-50 p-4 rounded-xl border border-red-100">
+              <h3 className="font-semibold text-red-800 mb-3 flex items-center">
+                ❌ Missing Skills
+              </h3>
+              {result.missing_skills.length > 0 ? (
+                <ul className="space-y-2">
+                  {result.missing_skills.map((skill: string, i: number) => (
+                    <li key={i} className="flex items-center text-red-700">
+                      <span className="mr-2">•</span> {skill}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-red-600 italic">No missing skills detected!</p>
+              )}
+            </div>
+          </div>
+
+          {result.recommendations && result.recommendations.length > 0 && (
+            <div className="mt-8 bg-yellow-50 p-6 rounded-xl border border-yellow-100">
+              <h3 className="text-lg font-bold text-yellow-800 mb-4">
+                📚 Personalized Learning Recommendations
+              </h3>
+              <div className="space-y-6">
+                {/* Check if recommendations is a string (raw LLM response) or parsed JSON */}
+                {typeof result.recommendations === 'string' ? (
+                  <div className="prose prose-sm max-w-none text-yellow-900 whitespace-pre-wrap">
+                    {result.recommendations}
+                  </div>
+                ) : (
+                  /* Assuming list of objects if structured */
+                  Array.isArray(result.recommendations) ? (
+                    result.recommendations.map((rec: any, i: number) => (
+                      <div key={i} className="bg-white p-4 rounded-lg shadow-sm">
+                        <h4 className="font-bold text-gray-800">{rec.skill || "Skill"}</h4>
+                        <p className="text-sm text-gray-600 mt-1">{rec.importance || rec.reason}</p>
+                        {rec.learning_path && (
+                          <ul className="mt-2 list-disc list-inside text-sm text-gray-700">
+                            {Array.isArray(rec.learning_path) ? rec.learning_path.map((step: string, j: number) => (
+                              <li key={j}>{step}</li>
+                            )) : <li>{String(rec.learning_path)}</li>}
+                          </ul>
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="prose prose-sm max-w-none text-yellow-900">
+                      {JSON.stringify(result.recommendations)}
+                    </div>
+                  )
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
-  );
+  )
 }
