@@ -58,7 +58,18 @@ class MatchRequest(BaseModel):
 
 @app.post("/ai/match")
 def match_api(data: MatchRequest):
-    return compute_match_pinecone(data.jd_skills)
+    result = compute_match_pinecone(data.jd_skills)
+
+    if result["missing_skills"]:
+        recommendations = generate_skill_recommendations(
+            result["missing_skills"]
+        )
+        result["recommendations"] = recommendations
+
+    else:
+        result["recommendations"] = []
+
+    return result
 
 from services.gap_service import generate_skill_recommendations
 
