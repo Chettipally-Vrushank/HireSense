@@ -64,17 +64,22 @@ def upsert_resume_skills(skills):
     clear_resume_skills()
     vectors = []
     
+    # Batch embedding generation
+    try:
+        embeddings = get_embedding(skills)
+    except Exception as e:
+        print(f"Error generating batch embeddings: {e}")
+        return
+
     for i, skill in enumerate(skills):
-        try:
-            embedding = get_embedding(skill)
+        if i < len(embeddings) and embeddings[i]: # Ensure embedding exists
             vectors.append({
                 "id": f"resume-skill-{i}",
-                "values": embedding,
+                "values": embeddings[i],
                 "metadata": {"text": skill}
             })
-        except Exception as e:
-            print(f"Error embedding skill {skill}: {e}")
-            continue
+        else:
+             print(f"Skipping skill {skill} due to missing embedding")
 
     if vectors:
         index.upsert(
