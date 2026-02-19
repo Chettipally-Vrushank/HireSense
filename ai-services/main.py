@@ -59,3 +59,16 @@ class MatchRequest(BaseModel):
 @app.post("/ai/match")
 def match_api(data: MatchRequest):
     return compute_match_pinecone(data.jd_skills)
+
+from services.gap_service import generate_skill_recommendations
+
+class GapRequest(BaseModel):
+    missing_skills: list
+
+@app.post("/ai/gap-analysis")
+def gap_analysis(data: GapRequest):
+    recommendations = generate_skill_recommendations(data.missing_skills)
+    return {
+        "missing_skills": data.missing_skills,
+        "recommendations": recommendations
+    }
