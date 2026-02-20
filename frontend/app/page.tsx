@@ -1,212 +1,118 @@
 "use client"
 
-import { useState } from "react"
+import Link from "next/link"
+import Navbar from "@/components/Navbar"
 
 export default function Home() {
-  const [file, setFile] = useState<File | null>(null)
-  const [jdText, setJdText] = useState("")
-  const [result, setResult] = useState<any>(null)
-  const [recommendations, setRecommendations] = useState<any>(null)
-  const [loading, setLoading] = useState(false)
-  const [recLoading, setRecLoading] = useState(false)
-
-  const handleAnalyze = async () => {
-    if (!file || !jdText) return
-
-    setLoading(true)
-    setResult(null)
-    setRecommendations(null)
-
-    try {
-      // 1️⃣ Parse Resume
-      const formData = new FormData()
-      formData.append("file", file)
-
-      const resumeRes = await fetch("http://localhost:8000/ai/parse-resume-pdf", {
-        method: "POST",
-        body: formData,
-      })
-      const resumeData = await resumeRes.json()
-
-      const resumeSkills = resumeData.skills || resumeData.programming_languages || []
-
-      // 2️⃣ Store Resume Skills in Vector DB
-      await fetch("http://localhost:8000/ai/store-resume-skills", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ skills: resumeSkills }),
-      })
-
-      // 3️⃣ Parse JD
-      const jdResponse = await fetch("http://localhost:8000/ai/parse-jd", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jd_text: jdText }),
-      })
-
-      const jdData = await jdResponse.json()
-      const jdSkills = [...(jdData.required_skills || []), ...(jdData.optional_skills || [])]
-
-      // 4️⃣ Match (Fast Phase)
-      const matchResponse = await fetch("http://localhost:8000/ai/match", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jd_skills: jdSkills }),
-      })
-
-      const matchData = await matchResponse.json()
-      setResult(matchData)
-      setLoading(false) // Show match results immediately
-
-      // 5️⃣ Gap Analysis (Lazy Loading / Heavy Phase)
-      if (matchData.missing_skills && matchData.missing_skills.length > 0) {
-        setRecLoading(true)
-        const gapResponse = await fetch("http://localhost:8000/ai/gap-analysis", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ missing_skills: matchData.missing_skills }),
-        })
-        const gapData = await gapResponse.json()
-        setRecommendations(gapData)
-        setRecLoading(false)
-      }
-    } catch (error) {
-      console.error("Error during analysis:", error)
-      alert("An error occurred during analysis.")
-      setLoading(false)
-      setRecLoading(false)
-    }
-  }
-
   return (
-    <div className="p-10 max-w-3xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">HireSense AI</h1>
+    <div className="min-h-screen bg-white text-gray-900 font-sans">
+      <Navbar />
 
-      <div className="space-y-4 mb-6">
-        <div>
-          <label className="block text-sm font-medium mb-1">Upload Resume (PDF)</label>
-          <input
-            type="file"
-            onChange={(e) => setFile(e.target.files?.[0] || null)}
-            className="block w-full text-sm text-slate-500
-              file:mr-4 file:py-2 file:px-4
-              file:rounded-full file:border-0
-              file:text-sm file:font-semibold
-              file:bg-blue-50 file:text-blue-700
-              hover:file:bg-blue-100
-            "
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-1">Job Description</label>
-          <textarea
-            placeholder="Paste Job Description here..."
-            className="w-full border rounded-lg p-3 h-40 focus:ring-2 focus:ring-blue-500 outline-none"
-            value={jdText}
-            onChange={(e) => setJdText(e.target.value)}
-          />
-        </div>
-
-        <button
-          onClick={handleAnalyze}
-          disabled={loading || !file || !jdText}
-          className={`w-full py-3 rounded-lg text-white font-semibold transition-colors ${loading || !file || !jdText
-            ? "bg-gray-400 cursor-not-allowed"
-            : "bg-blue-600 hover:bg-blue-700"
-            }`}
-        >
-          {loading ? "Analyzing..." : "Analyze Match"}
-        </button>
-      </div>
-
-      {result && (
-        <div className="mt-8 border-t pt-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold">Analysis Result</h2>
-            <div className="text-xl font-semibold px-4 py-2 bg-blue-100 text-blue-800 rounded-full">
-              Fit Score: {result.fit_score}%
-            </div>
+      {/* Hero Section */}
+      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-sm font-medium mb-8 animate-fade-in">
+            <span className="flex h-2 w-2 rounded-full bg-indigo-600"></span>
+            Now supporting Google OAuth 2.0
+          </div>
+          <h1 className="text-5xl sm:text-7xl font-extrabold tracking-tight mb-8 leading-tight">
+            Stop Guessing. <br />
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-500">
+              Land Your Dream Job.
+            </span>
+          </h1>
+          <p className="max-w-2xl mx-auto text-xl text-gray-600 mb-10 leading-relaxed">
+            Revolutionize your career with AI-powered resume analysis. Match your skills to any job description and get a personalized roadmap to success.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link
+              href="/signup"
+              className="w-full sm:w-auto px-8 py-4 bg-indigo-600 text-white font-bold rounded-2xl hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-200 hover:scale-105"
+            >
+              Analyze Your Resume Now
+            </Link>
+            <Link
+              href="/#features"
+              className="w-full sm:w-auto px-8 py-4 bg-white text-gray-700 font-bold rounded-2xl border border-gray-200 hover:bg-gray-50 transition-all"
+            >
+              View Features
+            </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-green-50 p-4 rounded-xl border border-green-100">
-              <h3 className="font-semibold text-green-800 mb-3 flex items-center">
-                ✅ Matched Skills
-              </h3>
-              {result.matched_skills.length > 0 ? (
-                <ul className="space-y-2">
-                  {result.matched_skills.map((skill: string, i: number) => (
-                    <li key={i} className="flex items-center text-green-700">
-                      <span className="mr-2">•</span> {skill}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-sm text-green-600 italic">No direct matches found.</p>
-              )}
-            </div>
-
-            <div className="bg-red-50 p-4 rounded-xl border border-red-100">
-              <h3 className="font-semibold text-red-800 mb-3 flex items-center">
-                ❌ Missing Skills
-              </h3>
-              {result.missing_skills.length > 0 ? (
-                <ul className="space-y-2">
-                  {result.missing_skills.map((skill: string, i: number) => (
-                    <li key={i} className="flex items-center text-red-700">
-                      <span className="mr-2">•</span> {skill}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-sm text-red-600 italic">No missing skills detected!</p>
-              )}
+          <div className="mt-20 relative max-w-5xl mx-auto">
+            <div className="absolute -inset-4 bg-gradient-to-r from-indigo-500 to-violet-500 rounded-[3rem] blur-3xl opacity-10 animate-pulse"></div>
+            <div className="relative bg-white border border-gray-100 rounded-[2.5rem] shadow-2xl overflow-hidden p-2">
+              <div className="bg-gray-50 rounded-[2rem] p-8 sm:p-12 aspect-[16/9] flex items-center justify-center border border-gray-100">
+                {/* Placeholder for Product Preview */}
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-white rounded-2xl shadow-sm mb-4 mx-auto flex items-center justify-center">
+                    <svg className="w-8 h-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <p className="text-gray-400 font-medium tracking-widest uppercase text-xs">AI Matcher Interface Preview</p>
+                </div>
+              </div>
             </div>
           </div>
-
-          {(recommendations || recLoading) && (
-            <div className="mt-8 bg-yellow-50 p-6 rounded-xl border border-yellow-100">
-              <h3 className="text-lg font-bold text-yellow-800 mb-4 flex items-center">
-                <span className="mr-2">📚</span> AI Career Advisor Recommendations
-              </h3>
-
-              {recLoading ? (
-                <div className="flex items-center space-x-3 text-yellow-700 animate-pulse">
-                  <div className="w-4 h-4 bg-yellow-400 rounded-full"></div>
-                  <p className="font-semibold">AI is analyzing missing skills and checking cache...</p>
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  {recommendations?.skills && recommendations.skills.length > 0 ? (
-                    recommendations.skills.map((rec: any, i: number) => (
-                      <div key={i} className="bg-white p-5 rounded-xl shadow-sm border border-yellow-200">
-                        <h4 className="font-bold text-gray-800 text-lg">{rec.skill_name || rec.skill || "Skill"}</h4>
-                        <p className="text-sm text-gray-700 mt-2 mb-3 leading-relaxed">
-                          {rec.short_importance || rec.importance || rec.reason}
-                        </p>
-                        {(rec.learning_steps || rec.learning_path) && (
-                          <div className="space-y-2">
-                            <p className="text-xs font-bold text-yellow-700 uppercase tracking-wider">Learning Path</p>
-                            <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
-                              {Array.isArray(rec.learning_steps || rec.learning_path) ?
-                                (rec.learning_steps || rec.learning_path).map((step: string, j: number) => (
-                                  <li key={j}>{step}</li>
-                                )) : <li>{String(rec.learning_steps || rec.learning_path)}</li>}
-                            </ul>
-                          </div>
-                        )}
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-sm text-yellow-700 italic">No recommendations available at this time.</p>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
         </div>
-      )}
+      </section>
+
+      {/* Features Section */}
+      <section id="features" className="py-24 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold mb-4">Everything You Need to Succeed</h2>
+            <p className="text-gray-600 max-w-xl mx-auto">Built by career experts and AI researchers to give you the competitive edge in today's job market.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                title: "Instant AI Matching",
+                description: "Get a compatibility score between your resume and any JD in seconds with zero latency.",
+                icon: "⚡",
+                color: "bg-amber-50 text-amber-600"
+              },
+              {
+                title: "Skill Gap Analysis",
+                description: "Identify exactly what's missing from your application to pass the ATS and land interviews.",
+                icon: "🎯",
+                color: "bg-indigo-50 text-indigo-600"
+              },
+              {
+                title: "Personalized Roadmap",
+                description: "Get a step-by-step learning path to acquire missing skills and bolster your resume.",
+                icon: "🗺️",
+                color: "bg-green-50 text-green-600"
+              }
+            ].map((feature, i) => (
+              <div key={i} className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all">
+                <div className={`w-14 h-14 ${feature.color} text-2xl rounded-2xl flex items-center justify-center mb-6`}>
+                  {feature.icon}
+                </div>
+                <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
+                <p className="text-gray-600 leading-relaxed">{feature.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-12 border-t border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-8">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold">H</div>
+            <span className="font-bold text-gray-900">HireSense</span>
+          </div>
+          <p className="text-gray-400 text-sm">© 2024 HireSense AI. All rights reserved.</p>
+          <div className="flex items-center gap-6">
+            <Link href="#" className="text-gray-400 hover:text-indigo-600 transition-colors text-sm">Privacy</Link>
+            <Link href="#" className="text-gray-400 hover:text-indigo-600 transition-colors text-sm">Terms</Link>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
