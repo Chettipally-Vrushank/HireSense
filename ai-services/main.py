@@ -67,17 +67,8 @@ class MatchRequest(BaseModel):
 
 @app.post("/ai/match")
 def match_api(data: MatchRequest):
+    # Only perform matching. No LLM calls here for speed.
     result = compute_match_pinecone(data.jd_skills)
-
-    if result["missing_skills"]:
-        recommendations = generate_skill_recommendations(
-            result["missing_skills"]
-        )
-        result["recommendations"] = recommendations
-
-    else:
-        result["recommendations"] = []
-
     return result
 
 from services.gap_service import generate_skill_recommendations
@@ -87,8 +78,6 @@ class GapRequest(BaseModel):
 
 @app.post("/ai/gap-analysis")
 def gap_analysis(data: GapRequest):
+    # This is now called separately (lazy loading)
     recommendations = generate_skill_recommendations(data.missing_skills)
-    return {
-        "missing_skills": data.missing_skills,
-        "recommendations": recommendations
-    }
+    return recommendations # Returns {"skills": [...]} contract

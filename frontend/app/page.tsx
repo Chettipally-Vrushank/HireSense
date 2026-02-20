@@ -6,12 +6,16 @@ export default function Home() {
   const [file, setFile] = useState<File | null>(null)
   const [jdText, setJdText] = useState("")
   const [result, setResult] = useState<any>(null)
+  const [recommendations, setRecommendations] = useState<any>(null)
   const [loading, setLoading] = useState(false)
+  const [recLoading, setRecLoading] = useState(false)
 
   const handleAnalyze = async () => {
     if (!file || !jdText) return
 
     setLoading(true)
+    setResult(null)
+    setRecommendations(null)
 
     try {
       // 1️⃣ Parse Resume
@@ -24,9 +28,7 @@ export default function Home() {
       })
       const resumeData = await resumeRes.json()
 
-      // Extract skills (handling different naming conventions from the agent)
       const resumeSkills = resumeData.skills || resumeData.programming_languages || []
-      console.log("Extracted Resume Skills:", resumeSkills)
 
       // 2️⃣ Store Resume Skills in Vector DB
       await fetch("http://localhost:8000/ai/store-resume-skills", {
@@ -43,17 +45,9 @@ export default function Home() {
       })
 
       const jdData = await jdResponse.json()
-      console.log("JD Data:", jdData)
-
-      if (!jdData.required_skills && !jdData.optional_skills) {
-        console.error("Invalid JD Data Format", jdData)
-        setLoading(false)
-        return
-      }
-
       const jdSkills = [...(jdData.required_skills || []), ...(jdData.optional_skills || [])]
 
-      // 4️⃣ Match
+      // 4️⃣ Match (Fast Phase)
       const matchResponse = await fetch("http://localhost:8000/ai/match", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -62,11 +56,25 @@ export default function Home() {
 
       const matchData = await matchResponse.json()
       setResult(matchData)
+      setLoading(false) // Show match results immediately
+
+      // 5️⃣ Gap Analysis (Lazy Loading / Heavy Phase)
+      if (matchData.missing_skills && matchData.missing_skills.length > 0) {
+        setRecLoading(true)
+        const gapResponse = await fetch("http://localhost:8000/ai/gap-analysis", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ missing_skills: matchData.missing_skills }),
+        })
+        const gapData = await gapResponse.json()
+        setRecommendations(gapData)
+        setRecLoading(false)
+      }
     } catch (error) {
       console.error("Error during analysis:", error)
       alert("An error occurred during analysis.")
-    } finally {
       setLoading(false)
+      setRecLoading(false)
     }
   }
 
@@ -157,36 +165,44 @@ export default function Home() {
             </div>
           </div>
 
-          {result.recommendations && (
+          {(recommendations || recLoading) && (
             <div className="mt-8 bg-yellow-50 p-6 rounded-xl border border-yellow-100">
               <h3 className="text-lg font-bold text-yellow-800 mb-4 flex items-center">
                 <span className="mr-2">📚</span> AI Career Advisor Recommendations
               </h3>
-              <div className="space-y-6">
-                {(result.recommendations.skills || (Array.isArray(result.recommendations) ? result.recommendations : [])).length > 0 ? (
-                  (result.recommendations.skills || (Array.isArray(result.recommendations) ? result.recommendations : [])).map((rec: any, i: number) => (
-                    <div key={i} className="bg-white p-5 rounded-xl shadow-sm border border-yellow-200">
-                      <h4 className="font-bold text-gray-800 text-lg">{rec.skill_name || rec.skill || "Skill"}</h4>
-                      <p className="text-sm text-gray-700 mt-2 mb-3 leading-relaxed">
-                        {rec.short_importance || rec.importance || rec.reason}
-                      </p>
-                      {(rec.learning_steps || rec.learning_path) && (
-                        <div className="space-y-2">
-                          <p className="text-xs font-bold text-yellow-700 uppercase tracking-wider">Learning Path</p>
-                          <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
-                            {Array.isArray(rec.learning_steps || rec.learning_path) ?
-                              (rec.learning_steps || rec.learning_path).map((step: string, j: number) => (
-                                <li key={j}>{step}</li>
-                              )) : <li>{String(rec.learning_steps || rec.learning_path)}</li>}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-sm text-yellow-700 italic">No recommendations available at this time.</p>
-                )}
-              </div>
+
+              {recLoading ? (
+                <div className="flex items-center space-x-3 text-yellow-700 animate-pulse">
+                  <div className="w-4 h-4 bg-yellow-400 rounded-full"></div>
+                  <p className="font-semibold">AI is analyzing missing skills and checking cache...</p>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {recommendations?.skills && recommendations.skills.length > 0 ? (
+                    recommendations.skills.map((rec: any, i: number) => (
+                      <div key={i} className="bg-white p-5 rounded-xl shadow-sm border border-yellow-200">
+                        <h4 className="font-bold text-gray-800 text-lg">{rec.skill_name || rec.skill || "Skill"}</h4>
+                        <p className="text-sm text-gray-700 mt-2 mb-3 leading-relaxed">
+                          {rec.short_importance || rec.importance || rec.reason}
+                        </p>
+                        {(rec.learning_steps || rec.learning_path) && (
+                          <div className="space-y-2">
+                            <p className="text-xs font-bold text-yellow-700 uppercase tracking-wider">Learning Path</p>
+                            <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
+                              {Array.isArray(rec.learning_steps || rec.learning_path) ?
+                                (rec.learning_steps || rec.learning_path).map((step: string, j: number) => (
+                                  <li key={j}>{step}</li>
+                                )) : <li>{String(rec.learning_steps || rec.learning_path)}</li>}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-sm text-yellow-700 italic">No recommendations available at this time.</p>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </div>

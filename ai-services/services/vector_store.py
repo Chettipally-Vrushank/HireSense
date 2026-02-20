@@ -64,7 +64,7 @@ def upsert_resume_skills(skills):
     clear_resume_skills()
     vectors = []
     
-    # Batch embedding generation
+    print(f"Generating embeddings for {len(skills)} skills...")
     try:
         embeddings = get_embedding(skills)
     except Exception as e:
@@ -72,20 +72,24 @@ def upsert_resume_skills(skills):
         return
 
     for i, skill in enumerate(skills):
-        if i < len(embeddings) and embeddings[i]: # Ensure embedding exists
+        # Fix: len(embeddings[i]) > 0 to ensure it's not a dummy empty list from failure
+        if i < len(embeddings) and embeddings[i] is not None and len(embeddings[i]) > 0:
             vectors.append({
                 "id": f"resume-skill-{i}",
                 "values": embeddings[i],
                 "metadata": {"text": skill}
             })
         else:
-             print(f"Skipping skill {skill} due to missing embedding")
+             print(f"⚠️ Skipping skill '{skill}' - no embedding generated")
 
     if vectors:
+        print(f"Upserting {len(vectors)} vectors to Pinecone...")
         index.upsert(
             vectors=vectors,
             namespace="resume"
         )
+    else:
+        print("❌ No valid vectors to upsert!")
 
 
 def query_skill(skill, top_k=1):
@@ -113,11 +117,14 @@ def get_all_resume_skills():
         return []
 
     skills = []
-    # result.vectors is a dict
-    vectors = result.vectors if isinstance(result.vectors, dict) else getattr(result, "vectors", {})
+    # Fetch response structure check
+    vectors = getattr(result, "vectors", {})
+    if not vectors:
+        print("Fetch returned no vectors for standard IDs.")
+        return []
     
     for key, value in vectors.items():
-        # Access metadata safely
+        # Pinecone SDK objects have a 'metadata' attribute
         metadata = getattr(value, "metadata", {})
         if not metadata and isinstance(value, dict):
              metadata = value.get("metadata", {})
@@ -125,4 +132,5 @@ def get_all_resume_skills():
         if metadata and "text" in metadata:
              skills.append(metadata["text"])
     
+    print(f"Fetched {len(skills)} skills from DB: {skills}")
     return skills
