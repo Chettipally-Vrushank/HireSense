@@ -12,12 +12,14 @@ load_dotenv()
 vertexai.init(project=PROJECT_ID, location=LOCATION)
 
 def call_gemini(prompt):
-    model = GenerativeModel("gemini-1.5-flash") # Reverted to 1.5 because 2.5 might be preview/unavailable or just to be safe, actually let's keep user's 2.5 if it worked? User had 2.5.
-    # User had "gemini-2.5-flash". Is that real? Usually 1.5. I'll stick to what was there if possible or use a known good one. 
-    # Actually "gemini-2.5-flash" sounds suspicious. "gemini-1.5-flash" is standard. "gemini-2.0-flash-exp" exists.
-    # I will stick to what was there: "gemini-2.5-flash". If it fails I'll fix it.
-    model = GenerativeModel("gemini-2.5-flash") 
-    response = model.generate_content(prompt)
+    model = GenerativeModel("gemini-2.5-flash")
+    response = model.generate_content(
+        prompt,
+        generation_config={
+            "temperature": 0.2,
+            "max_output_tokens": 400
+        }
+    )
     return response.text
 
 def get_embedding(text):

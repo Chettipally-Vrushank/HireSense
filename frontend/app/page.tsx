@@ -104,8 +104,8 @@ export default function Home() {
           onClick={handleAnalyze}
           disabled={loading || !file || !jdText}
           className={`w-full py-3 rounded-lg text-white font-semibold transition-colors ${loading || !file || !jdText
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-blue-600 hover:bg-blue-700"
+            ? "bg-gray-400 cursor-not-allowed"
+            : "bg-blue-600 hover:bg-blue-700"
             }`}
         >
           {loading ? "Analyzing..." : "Analyze Match"}
@@ -157,38 +157,34 @@ export default function Home() {
             </div>
           </div>
 
-          {result.recommendations && result.recommendations.length > 0 && (
+          {result.recommendations && (
             <div className="mt-8 bg-yellow-50 p-6 rounded-xl border border-yellow-100">
-              <h3 className="text-lg font-bold text-yellow-800 mb-4">
-                📚 Personalized Learning Recommendations
+              <h3 className="text-lg font-bold text-yellow-800 mb-4 flex items-center">
+                <span className="mr-2">📚</span> AI Career Advisor Recommendations
               </h3>
               <div className="space-y-6">
-                {/* Check if recommendations is a string (raw LLM response) or parsed JSON */}
-                {typeof result.recommendations === 'string' ? (
-                  <div className="prose prose-sm max-w-none text-yellow-900 whitespace-pre-wrap">
-                    {result.recommendations}
-                  </div>
-                ) : (
-                  /* Assuming list of objects if structured */
-                  Array.isArray(result.recommendations) ? (
-                    result.recommendations.map((rec: any, i: number) => (
-                      <div key={i} className="bg-white p-4 rounded-lg shadow-sm">
-                        <h4 className="font-bold text-gray-800">{rec.skill || "Skill"}</h4>
-                        <p className="text-sm text-gray-600 mt-1">{rec.importance || rec.reason}</p>
-                        {rec.learning_path && (
-                          <ul className="mt-2 list-disc list-inside text-sm text-gray-700">
-                            {Array.isArray(rec.learning_path) ? rec.learning_path.map((step: string, j: number) => (
-                              <li key={j}>{step}</li>
-                            )) : <li>{String(rec.learning_path)}</li>}
+                {(result.recommendations.skills || (Array.isArray(result.recommendations) ? result.recommendations : [])).length > 0 ? (
+                  (result.recommendations.skills || (Array.isArray(result.recommendations) ? result.recommendations : [])).map((rec: any, i: number) => (
+                    <div key={i} className="bg-white p-5 rounded-xl shadow-sm border border-yellow-200">
+                      <h4 className="font-bold text-gray-800 text-lg">{rec.skill_name || rec.skill || "Skill"}</h4>
+                      <p className="text-sm text-gray-700 mt-2 mb-3 leading-relaxed">
+                        {rec.short_importance || rec.importance || rec.reason}
+                      </p>
+                      {(rec.learning_steps || rec.learning_path) && (
+                        <div className="space-y-2">
+                          <p className="text-xs font-bold text-yellow-700 uppercase tracking-wider">Learning Path</p>
+                          <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
+                            {Array.isArray(rec.learning_steps || rec.learning_path) ?
+                              (rec.learning_steps || rec.learning_path).map((step: string, j: number) => (
+                                <li key={j}>{step}</li>
+                              )) : <li>{String(rec.learning_steps || rec.learning_path)}</li>}
                           </ul>
-                        )}
-                      </div>
-                    ))
-                  ) : (
-                    <div className="prose prose-sm max-w-none text-yellow-900">
-                      {JSON.stringify(result.recommendations)}
+                        </div>
+                      )}
                     </div>
-                  )
+                  ))
+                ) : (
+                  <p className="text-sm text-yellow-700 italic">No recommendations available at this time.</p>
                 )}
               </div>
             </div>
