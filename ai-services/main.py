@@ -3,8 +3,20 @@ from pydantic import BaseModel
 import PyPDF2
 from agents.resume_agent import parse_resume
 from fastapi.middleware.cors import CORSMiddleware
+from database.mongo import connect_to_mongo, close_mongo_connection
+from auth.routes import router as auth_router
 
 app = FastAPI()
+
+@app.on_event("startup")
+async def startup_db_client():
+    await connect_to_mongo()
+
+@app.on_event("shutdown")
+async def shutdown_db_client():
+    await close_mongo_connection()
+
+app.include_router(auth_router)
 
 app.add_middleware(
     CORSMiddleware,
