@@ -1,10 +1,26 @@
 from fastapi import APIRouter, HTTPException, Depends, status
-from .models import UserSignup, UserLogin, UserResponse, Token
-from .auth_service import register_user, authenticate_user
+from .models import UserSignup, UserLogin, UserResponse, Token, GoogleLoginRequest
+from .auth_service import register_user, authenticate_user, authenticate_google_user
 from .jwt_handler import create_access_token, get_current_user_id
+from .google_auth import verify_google_token
 from database.user_repository import get_user_by_id
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
+
+@router.post("/google", response_model=Token)
+async def google_login(data: GoogleLoginRequest):
+    # 1. Verify Google Token
+    idinfo = verify_google_token(data.token)
+    email = idinfo.get("email")
+    if not email:
+        raise HTTPException(status_code=400, detail="Google token missing email")
+
+    # 2. Authenticate/Register User
+    user = await authenticate_google_user(email)
+    
+    # 3. Generate JWT
+    access_token = create_access_token(data={"user_id": str(user["_id"])})
+    return {"access_token": access_token, "token_type": "bearer"}
 
 @router.post("/signup", response_model=UserResponse)
 async def signup(user_data: UserSignup):

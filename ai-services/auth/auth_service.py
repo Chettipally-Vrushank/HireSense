@@ -27,6 +27,19 @@ async def register_user(email: str, password: str):
     hashed_password = hash_password(password)
     user_data = {
         "email": email,
-        "hashed_password": hashed_password
+        "hashed_password": hashed_password,
+        "is_social": False
     }
     return await create_user(user_data)
+
+async def authenticate_google_user(email: str):
+    user = await get_user_by_email(email)
+    if not user:
+        # Create user if not exists (Social Login)
+        user_data = {
+            "email": email,
+            "hashed_password": None, # No password for social users
+            "is_social": True
+        }
+        user = await create_user(user_data)
+    return user
