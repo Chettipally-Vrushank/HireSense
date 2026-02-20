@@ -39,49 +39,89 @@ def generate_skill_recommendations(missing_skills):
             recommendations.append(cache[norm_skill])
         else:
             to_generate.append(skill)
+            
+    # Filter out common JD headers that might have been parsed as "skills"
+    noise_headers = ["responsibilities:", "preferred skills:", "requirements:", "qualifications:", "about the role:"]
+    to_generate = [s for s in to_generate if s.lower() not in noise_headers]
+    
+    if not to_generate and not recommendations:
+        return {"skills": []}
 
     # 2. Generate for missing ones
     if to_generate:
-        # Limit to top 10 for performance
-        sample = to_generate[:10]
+        sample = to_generate[:8] # Reduce count for reliability
         
         prompt = f"""
-        You are an AI career advisor. For each missing skill listed below, generate a personalized learning plan.
-
-        Missing Skills:
+        You are a technical career coach. Create a brief learning roadmap for these specific job requirements:
         {sample}
 
-        Rules:
-        - Keep responses extremely concise (under 120 words per skill).
-        - No long paragraphs or markdown formatting.
-        - Return ONLY a valid JSON object with a "skills" array.
-        - Exactly 3 short bullet learning steps per skill.
-
-        JSON Format:
+        RETURN ONLY A PURE JSON OBJECT. NO MARKDOWN. NO BACKTICKS.
+        JSON structure:
         {{
           "skills": [
             {{
-              "skill_name": "Skill Name",
-              "short_importance": "1-2 lines explaining importance",
-              "learning_steps": ["Step 1", "Step 2", "Step 3"]
+              "skill_name": "Title",
+              "importance": "Brief why",
+              "roadmap": ["Step 1", "Step 2", "Step 3"]
             }}
           ]
         }}
+        
+        Rules:
+        - roadmap must be an array of exactly 3 strings.
+        - Avoid unescaped " quotes inside strings.
+        - Ensure the JSON is complete and valid.
         """
         
         try:
+            # Reverting is_json=True if the earlier model was 2.5 flash which might not support it
+            # Using standard call first
             response = call_gemini(prompt)
-            print(f"Gap Analysis Response (Live): {response[:100]}...") # Log start of response
             
-            clean = response.strip().strip("```json").strip("```").strip()
-            data = json.loads(clean)
+            # Ultra-robust JSON extraction
+            import re
+            # Find the first { and the last }
+            start = response.find('{')
+            end = response.rfind('}')
+            
+            if start != -1 and end != -1:
+                clean = response[start:end+1]
+                
+                # Pre-processing to fix common LLM JSON errors
+                # 1. Remove trailing commas in arrays/objects
+                clean = re.sub(r',\s*([\]\}])', r'\1', clean)
+                # 2. Try to fix unescaped double quotes in strings (best effort)
+                # This is tricky but let's at least handle major ones
+            else:
+                clean = response.strip()
+                
+            try:
+                data = json.loads(clean)
+            except json.JSONDecodeError as e:
+                # If it's a truncation error ("Unterminated string"), try to close it
+                if "Unterminated string" in str(e):
+                    # Append quotes and braces to see if it fixes it
+                    data = json.loads(clean + '"]}]}')
+                else:
+                    raise e
             
             # Update Cache & Results
             if "skills" in data:
                 for rec in data["skills"]:
-                    norm_name = normalize_skill(rec["skill_name"])
-                    cache[norm_name] = rec
-                    recommendations.append(rec)
+                    # Handle potential key mismatch or variations
+                    skill_name = rec.get("skill_name", "Unknown Skill")
+                    importance = rec.get("importance", rec.get("short_importance", ""))
+                    roadmap = rec.get("roadmap", rec.get("learning_steps", []))
+                    
+                    final_rec = {
+                        "skill_name": skill_name,
+                        "importance": importance,
+                        "roadmap": roadmap
+                    }
+                    
+                    norm_name = normalize_skill(skill_name)
+                    cache[norm_name] = final_rec
+                    recommendations.append(final_rec)
                 save_cache(cache)
         except Exception as e:
             print(f"❌ Error generating/parsing recommendations for {to_generate}: {e}")
@@ -89,8 +129,8 @@ def generate_skill_recommendations(missing_skills):
             for skill in to_generate:
                 recommendations.append({
                     "skill_name": skill,
-                    "short_importance": "Recommendations currently unavailable.",
-                    "learning_steps": ["Research documentation", "Explore online tutorials", "Apply in a small project"]
+                    "importance": "Recommendations currently unavailable.",
+                    "roadmap": ["Research documentation", "Explore online tutorials", "Apply in a small project"]
                 })
 
     return {"skills": recommendations}

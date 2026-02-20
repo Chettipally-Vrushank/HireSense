@@ -11,16 +11,22 @@ load_dotenv()
 
 vertexai.init(project=PROJECT_ID, location=LOCATION)
 
-def call_gemini(prompt):
-    model_name = "gemini-2.5-flash"
+def call_gemini(prompt, is_json=False):
+    model_name = "gemini-2.5-flash" 
     print(f"Calling Gemini ({model_name})...")
     model = GenerativeModel(model_name)
+    
+    config = {
+        "temperature": 0.2,
+        "max_output_tokens": 1000
+    }
+    
+    if is_json:
+        config["response_mime_type"] = "application/json"
+        
     response = model.generate_content(
         prompt,
-        generation_config={
-            "temperature": 0.2,
-            "max_output_tokens": 1000
-        }
+        generation_config=config
     )
     return response.text
 

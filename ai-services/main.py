@@ -1,4 +1,6 @@
 from fastapi import FastAPI, UploadFile, File
+from dotenv import load_dotenv
+load_dotenv()
 from pydantic import BaseModel
 import PyPDF2
 from agents.resume_agent import parse_resume

@@ -50,7 +50,7 @@ export default function LoginPage() {
         // Note: The backend should return a redirect URL or handle standard OAuth flow
         // For now, redirecting to the standard backend endpoint
         // standard flow: open popup or redirect
-        window.location.href = "http://localhost:8001/auth/google/login"
+        window.location.href = "http://localhost:8000/auth/google/login"
     }
 
     return (
