@@ -15,6 +15,7 @@ export default function TailorPage() {
     const [loading, setLoading] = useState(false)
     const [tailoredData, setTailoredData] = useState<any>(null)
     const [pdfLoading, setPdfLoading] = useState(false)
+    const [saving, setSaving] = useState(false)
 
     useEffect(() => {
         const id = searchParams.get("id")
@@ -38,21 +39,10 @@ export default function TailorPage() {
                 const uploadRes = await api.upload("/ai/parse-resume-pdf", formData)
                 const resumeInfo = await uploadRes.json()
                 resumeId = resumeInfo.id
+                setSelectedResumeId(resumeId) // Keep track of the newly uploaded resume ID
             }
 
             if (!resumeId) throw new Error("Could not determine resume ID")
-
-            // In our current backend, parse-resume-pdf might not return an ID yet 
-            // if it just calls parse_resume. Let's assume we need to save it or use a separate flow.
-            // Wait, my implemented backend /ai/parse-resume-pdf doesn't save to DB.
-            // But I implemented save_resume in the repo.
-
-            // Let's check my main.py implementation again.
-            // Actually, I should have a separate endpoint or modify the current one.
-            // For now, I'll use the ID if returned, or modify main.py to save it.
-
-            // Re-evaluating backend: I need /ai/tailor-resume to take resume_id.
-            // So I need an endpoint to save the resume first.
 
             const tailorRes = await api.post("/ai/tailor-resume", {
                 resume_id: resumeId,
@@ -70,6 +60,28 @@ export default function TailorPage() {
             alert("Something went wrong.")
         } finally {
             setLoading(false)
+        }
+    }
+
+    const handleSavePersist = async () => {
+        if (!tailoredData) return
+        setSaving(true)
+        try {
+            const res = await api.post("/ai/tailored-resumes", {
+                resume_data: tailoredData,
+                original_resume_id: selectedResumeId
+            })
+            if (res.ok) {
+                alert("Tailored resume saved successfully!")
+            } else {
+                const errData = await res.json()
+                alert(`Failed to save: ${errData.detail || "Unknown error"}`)
+            }
+        } catch (err) {
+            console.error("Save failed:", err)
+            alert("Error saving resume.")
+        } finally {
+            setSaving(false)
         }
     }
 
@@ -100,7 +112,7 @@ export default function TailorPage() {
             <div className="max-w-4xl mx-auto space-y-12">
                 <header className="text-center">
                     <h1 className="text-4xl font-black text-gray-900 mb-4">AI Resume Tailor</h1>
-                    <p className="text-gray-500 text-lg">Automatically rewrite your resume to match any job description.</p>
+                    <p className="text-gray-600 font-medium text-lg">Automatically rewrite your resume to match any job description.</p>
                 </header>
 
                 {!tailoredData ? (
@@ -169,6 +181,8 @@ export default function TailorPage() {
                             data={tailoredData}
                             onSave={setTailoredData}
                             onDownload={handleDownloadPDF}
+                            onSavePersist={handleSavePersist}
+                            isSaving={saving}
                         />
                         <div className="flex justify-center">
                             <button

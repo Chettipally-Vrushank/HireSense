@@ -2,7 +2,19 @@
 
 import { useState } from "react"
 
-export default function ResumeEditor({ data, onSave, onDownload }: { data: any, onSave: (newData: any) => void, onDownload: () => void }) {
+export default function ResumeEditor({
+    data,
+    onSave,
+    onDownload,
+    onSavePersist,
+    isSaving
+}: {
+    data: any,
+    onSave: (newData: any) => void,
+    onDownload: () => void,
+    onSavePersist?: () => void,
+    isSaving?: boolean
+}) {
     const [editedData, setEditedData] = useState(data)
 
     const handleChange = (path: string, value: any) => {
@@ -33,12 +45,23 @@ export default function ResumeEditor({ data, onSave, onDownload }: { data: any, 
         <div className="bg-white rounded-[2.5rem] p-8 border border-gray-100 shadow-xl shadow-gray-200/50 animate-slide-up space-y-8">
             <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-black text-gray-900">Tailored Resume Preview</h2>
-                <button
-                    onClick={onDownload}
-                    className="px-6 py-2 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all shadow-md"
-                >
-                    Export as PDF
-                </button>
+                <div className="flex gap-4">
+                    {onSavePersist && (
+                        <button
+                            onClick={onSavePersist}
+                            disabled={isSaving}
+                            className="px-6 py-2 border-2 border-indigo-600 text-indigo-600 font-bold rounded-xl hover:bg-indigo-50 transition-all disabled:opacity-50"
+                        >
+                            {isSaving ? "Saving..." : "Save for Later"}
+                        </button>
+                    )}
+                    <button
+                        onClick={onDownload}
+                        className="px-6 py-2 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all shadow-md"
+                    >
+                        Export as PDF
+                    </button>
+                </div>
             </div>
 
             <div className="space-y-6">

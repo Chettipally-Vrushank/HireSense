@@ -11,6 +11,13 @@ from fastapi import Depends
 from fastapi.responses import FileResponse
 from auth.jwt_handler import get_current_user_id
 from database.resume_repository import get_resume_by_id, save_resume, list_resumes
+from database.tailored_resume_repository import (
+    save_tailored_resume,
+    list_tailored_resumes,
+    get_tailored_resume,
+    update_tailored_resume,
+    delete_tailored_resume
+)
 from services.resume_tailor_service import generate_tailored_resume
 try:
     from services.pdf_generator_service import generate_pdf_from_resume
@@ -175,3 +182,38 @@ async def generate_pdf_api(data: GeneratePDFRequest, user_id: str = Depends(get_
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"PDF generation failed: {str(e)}")
+
+# 🔹 Tailored Resume CRUD
+class TailoredResumeSaveRequest(BaseModel):
+    resume_data: dict
+    original_resume_id: str = None
+
+@app.post("/ai/tailored-resumes")
+async def save_tailored_resume_api(data: TailoredResumeSaveRequest, user_id: str = Depends(get_current_user_id)):
+    return await save_tailored_resume(user_id, data.resume_data, data.original_resume_id)
+
+@app.get("/ai/tailored-resumes")
+async def list_tailored_resumes_api(user_id: str = Depends(get_current_user_id)):
+    return await list_tailored_resumes(user_id)
+
+@app.get("/ai/tailored-resumes/{id}")
+async def get_tailored_resume_api(id: str, user_id: str = Depends(get_current_user_id)):
+    resume = await get_tailored_resume(id, user_id)
+    if not resume:
+        raise HTTPException(status_code=404, detail="Tailored resume not found")
+    return resume
+
+@app.put("/ai/tailored-resumes/{id}")
+async def update_tailored_resume_api(id: str, data: dict, user_id: str = Depends(get_current_user_id)):
+    # The data sent here should be the resume_data dict
+    success = await update_tailored_resume(id, user_id, data)
+    if not success:
+        raise HTTPException(status_code=404, detail="Tailored resume not found or not modified")
+    return {"status": "success"}
+
+@app.delete("/ai/tailored-resumes/{id}")
+async def delete_tailored_resume_api(id: str, user_id: str = Depends(get_current_user_id)):
+    success = await delete_tailored_resume(id, user_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Tailored resume not found")
+    return {"status": "success"}
