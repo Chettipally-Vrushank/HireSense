@@ -78,7 +78,7 @@ export default function AnalyzePage() {
                             Job Description
                         </h2>
                         <textarea
-                            className="w-full h-48 px-6 py-5 rounded-[2rem] border border-gray-200 bg-gray-50/50 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50/50 outline-none transition-all resize-none text-sm leading-relaxed"
+                            className="w-full h-48 px-6 py-5 rounded-[2rem] border border-gray-200 bg-gray-50/50 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50/50 outline-none transition-all resize-none text-sm leading-relaxed text-gray-900 font-medium"
                             placeholder="Paste the job requirements here..."
                             value={jdText}
                             onChange={(e) => setJdText(e.target.value)}
@@ -111,7 +111,7 @@ export default function AnalyzePage() {
                     <div className="space-y-8 animate-slide-up">
                         <div className="text-center">
                             <h2 className="text-3xl font-black text-gray-900 mb-2">Your AI Learning Path</h2>
-                            <p className="text-gray-500">Step-by-step roadmap to bridge your skill gaps.</p>
+                            <p className="text-gray-600 font-medium">Step-by-step roadmap to bridge your skill gaps.</p>
                         </div>
                         <div className="grid grid-cols-1 gap-6">
                             {recommendations.map((rec: any, i: number) => (
@@ -127,12 +127,12 @@ export default function AnalyzePage() {
                                         </div>
                                     </div>
                                     <div className="bg-gray-50 rounded-2xl p-6">
-                                        <h4 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">Learning roadmap</h4>
+                                        <h4 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4">Learning roadmap</h4>
                                         <ul className="space-y-4">
                                             {rec.roadmap?.map((step: string, j: number) => (
                                                 <li key={j} className="flex gap-4 items-start">
-                                                    <span className="flex-shrink-0 w-6 h-6 bg-white border border-gray-200 rounded-full flex items-center justify-center text-xs font-bold text-gray-500">{j + 1}</span>
-                                                    <span className="text-gray-600 text-sm leading-relaxed">{step}</span>
+                                                    <span className="flex-shrink-0 w-6 h-6 bg-white border border-gray-200 rounded-full flex items-center justify-center text-xs font-bold text-gray-700">{j + 1}</span>
+                                                    <span className="text-gray-800 text-sm font-medium leading-relaxed">{step}</span>
                                                 </li>
                                             ))}
                                         </ul>

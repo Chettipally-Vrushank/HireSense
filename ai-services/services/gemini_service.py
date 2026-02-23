@@ -4,10 +4,10 @@ import vertexai
 from vertexai.generative_models import GenerativeModel
 from vertexai.language_models import TextEmbeddingModel
 
+load_dotenv()
+
 PROJECT_ID = os.getenv("GOOGLE_PROJECT_ID")
 LOCATION = "us-central1"
-
-load_dotenv()
 
 vertexai.init(project=PROJECT_ID, location=LOCATION)
 
@@ -17,17 +17,26 @@ def call_gemini(prompt, is_json=False):
     model = GenerativeModel(model_name)
     
     config = {
-        "temperature": 0.2,
-        "max_output_tokens": 1000
+        "temperature": 0.1,  # Lower temperature for more stable JSON
+        "max_output_tokens": 8192,
+        "top_p": 0.95,
+        "top_k": 40
     }
     
     if is_json:
+        # Note: If gemini-2.5-flash is an experimental model, 
+        # response_mime_type might behave unexpectedly. 
+        # We'll keep it but reinforce in the prompt.
         config["response_mime_type"] = "application/json"
         
     response = model.generate_content(
         prompt,
         generation_config=config
     )
+    
+    if not response.text:
+        raise ValueError("Gemini returned an empty response")
+        
     return response.text
 
 def get_embedding(text):

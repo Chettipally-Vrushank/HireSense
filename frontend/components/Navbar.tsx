@@ -27,11 +27,11 @@ export default function Navbar() {
                     </div>
 
                     <div className="hidden md:flex items-center gap-8">
-                        <Link href="/#features" className="text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors">
-                            Features
+                        <Link href="/analyze" className="text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors">
+                            Analyze
                         </Link>
-                        <Link href="/#how-it-works" className="text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors">
-                            How it Works
+                        <Link href="/tailor" className="text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors">
+                            Tailor Resume
                         </Link>
                     </div>
 

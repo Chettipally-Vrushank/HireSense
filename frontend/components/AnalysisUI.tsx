@@ -52,7 +52,7 @@ export function ResumeUpload({ onFileSelect }: { onFileSelect: (file: File) => v
                 )}
             </div>
             <p className="text-lg font-bold text-gray-900 mb-1">{fileName || "Upload Resume PDF"}</p>
-            <p className="text-gray-500 text-sm">Drag and drop or click to browse</p>
+            <p className="text-gray-600 font-medium text-sm">Drag and drop or click to browse</p>
         </div>
     )
 }
@@ -76,14 +76,14 @@ export function MatchResult({ result, onGenerateRecs, recLoading }: { result: an
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
                         <span className={`text-4xl font-black ${colorClass}`}>{score}%</span>
-                        <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Fit Score</span>
+                        <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Fit Score</span>
                     </div>
                 </div>
 
                 <div className="flex-1 space-y-6 text-center md:text-left">
                     <div>
                         <h3 className="text-2xl font-black text-gray-900 mb-2">Analysis Complete!</h3>
-                        <p className="text-gray-500 leading-relaxed">We've compared your profile against the job requirements. Here's how you stack up.</p>
+                        <p className="text-gray-600 font-medium leading-relaxed">We've compared your profile against the job requirements. Here's how you stack up.</p>
                     </div>
                     {!result.recommendations && (
                         <button
