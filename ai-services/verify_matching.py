@@ -1,8 +1,17 @@
 import sys
 import os
+from unittest.mock import MagicMock
+
+# Mock dependencies
+sys.modules["dotenv"] = MagicMock()
+sys.modules["vertexai"] = MagicMock()
+sys.modules["vertexai.generative_models"] = MagicMock()
+sys.modules["vertexai.language_models"] = MagicMock()
 
 # Add the project root to sys.path
-sys.path.append(r"c:\Users\Anisha\OneDrive\Desktop\Mini project\HireSense\ai-services")
+sys.path.append(os.getcwd())
+# Also append ai-services to support absolute imports if needed
+sys.path.append(os.path.join(os.getcwd(), "ai-services"))
 
 from services.matching_service import run_matching_pipeline, normalize_skills, compute_match
 import unittest
@@ -36,10 +45,12 @@ class TestNewMatchingPipeline(unittest.TestCase):
         def mock_get_embedding(text):
             if isinstance(text, list):
                 return [mock_get_embedding(t) for t in text]
-            if text == "Time-series forecasting": return [1, 0]
-            if text == "SARIMA": return [0.8, 0.6] # similarity = 0.8
-            if text == "Java": return [0, 1]
-            return [1, 1]
+            # Use 3D vectors to ensure orthogonality
+            if text == "Time-series forecasting": return [0, 1, 0]
+            if text == "SARIMA": return [0, 0.8, 0.6] # similarity = 0.8 with TS
+            if text == "Java": return [0, 0, 1]
+            if text == "Python": return [1, 0, 0]
+            return [1, 0, 0] # Default to Python-like for others
 
         with patch('services.matching_service.get_embedding', side_effect=mock_get_embedding):
             # We need to compute match with these mocks
