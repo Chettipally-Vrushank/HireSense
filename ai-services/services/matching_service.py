@@ -13,6 +13,27 @@ PHRASE_MAPPING = {
     "time-series forecasting models": "time-series forecasting",
     "data visualization using power bi": "power bi",
     "knowledge of sql": "sql",
+    # Mappings added for better semantic matching
+    "arima": "time-series forecasting",
+    "sarima": "time-series forecasting",
+    "lightgbm": "gradient boosting",
+    "xgboost": "gradient boosting",
+    "catboost": "gradient boosting",
+    "gbm": "gradient boosting",
+    "reactjs": "react",
+    "nodejs": "node.js",
+    "node": "node.js",
+    "expressjs": "express.js",
+    "express": "express.js",
+    "mongo": "mongodb",
+    "rest apis": "api",
+    "apis": "api",
+    "rest api": "api",
+    "git version control": "git",
+    "github": "git",
+    "docker": "containerization",
+    "kubernetes": "container orchestration",
+    "model benchmarking": "model evaluation",
 }
 
 def normalize_skills(skills):
@@ -97,20 +118,20 @@ def compute_match(jd_skills, resume_skills, threshold=0.7):
                 score = max_sim if max_sim >= 0.75 else max_sim # Scoring rule: Strong semantic >= 0.75 -> similarity score
                 match_type = "SEMANTIC"
         
-        # STEP 4: Keyword Fallback
-        if match_type is None and jd_skill in jd_to_kws:
-            kws = jd_to_kws[jd_skill]
-            max_kw_sim = 0
-            for kw in kws:
-                kw_emb = kw_embs.get(kw)
-                for rs, rs_emb in resume_embs.items():
-                    sim = cosine_similarity(kw_emb, rs_emb)
-                    if sim > max_kw_sim:
-                        max_kw_sim = sim
-            
-            if max_kw_sim >= (threshold + 0.05):
-                score = 0.6
-                match_type = "KEYWORD"
+        # STEP 4: Keyword Fallback (Disabled to reduce false positives)
+        # if match_type is None and jd_skill in jd_to_kws:
+        #     kws = jd_to_kws[jd_skill]
+        #     max_kw_sim = 0
+        #     for kw in kws:
+        #         kw_emb = kw_embs.get(kw)
+        #         for rs, rs_emb in resume_embs.items():
+        #             sim = cosine_similarity(kw_emb, rs_emb)
+        #             if sim > max_kw_sim:
+        #                 max_kw_sim = sim
+        #
+        #     if max_kw_sim >= (threshold + 0.05):
+        #         score = 0.6
+        #         match_type = "KEYWORD"
         
         if match_type:
             matched.append(jd_skill)
