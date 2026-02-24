@@ -74,8 +74,9 @@ async def parse_resume_pdf(file: UploadFile = File(...), user_id: str = Depends(
         skills=parsed_data.get("skills", [])
     )
     
-    # Return parsed data + ID
+    # Return parsed data + ID + original text for fresh matching
     parsed_data["id"] = resume["_id"]
+    parsed_data["original_text"] = text
     return parsed_data
 
 
@@ -102,15 +103,16 @@ def store_resume_skills(data: ResumeSkillsRequest):
     return {"status": "Resume skills stored in Pinecone"}
 
 
-from services.matching_service import compute_match_pinecone
+from services.matching_service import run_matching_pipeline
 
 class MatchRequest(BaseModel):
-    jd_skills: list
+    jd_text: str
+    resume_text: str
 
 @app.post("/ai/match")
-def match_api(data: MatchRequest):
-    # Only perform matching. No LLM calls here for speed.
-    result = compute_match_pinecone(data.jd_skills)
+def match_api(data: MatchRequest, user_id: str = Depends(get_current_user_id)):
+    # Full pipeline run: Extract -> Normalize -> Match
+    result = run_matching_pipeline(data.jd_text, data.resume_text)
     return result
 
 from services.gap_service import generate_skill_recommendations

@@ -23,12 +23,20 @@ export default function AnalyzePage() {
             const formData = new FormData()
             formData.append("file", file)
             const parseRes = await api.upload("/ai/parse-resume-pdf", formData)
+            if (!parseRes.ok) {
+                const errorData = await parseRes.json();
+                throw new Error(errorData.detail || "Failed to parse resume");
+            }
             const resumeData = await parseRes.json()
 
             const matchRes = await api.post("/ai/match", {
-                jd_skills: jdText.split(/[\n,]+/).map(s => s.trim()).filter(s => s),
-                resume_skills: resumeData.skills
+                jd_text: jdText,
+                resume_text: resumeData.original_text
             })
+            if (!matchRes.ok) {
+                const errorData = await matchRes.json();
+                throw new Error(errorData.detail || "Matching failed");
+            }
             const matchData = await matchRes.json()
             setResult(matchData)
         } catch (err) {

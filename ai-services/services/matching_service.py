@@ -1,71 +1,139 @@
-from services.vector_store import query_skill, get_all_resume_skills
+import numpy as np
+from agents.jd_agent import extract_skills as extract_jd_skills
+from agents.resume_agent import extract_skills as extract_resume_skills
+from services.gemini_service import get_embedding
 
-def compute_match_pinecone(jd_skills, threshold=0.7):
-    # 0. Fetch all resume skills once (Stable Contract Guarantee)
-    resume_skills = get_all_resume_skills()
-    print(f"DEBUG: Matching against {len(resume_skills)} resume skills.")
+BLACKLIST = ["india", "hyderabad", "intern", "internship", "role", "location"]
 
-    # Normalize for comparison
-    resume_skills_lower = {s.strip().lower() for s in resume_skills}
+PHRASE_MAPPING = {
+    "strong python programming": "python",
+    "python programming": "python",
+    "time series forecasting models": "time-series forecasting",
+    "time series forecasting": "time-series forecasting",
+    "time-series forecasting models": "time-series forecasting",
+    "data visualization using power bi": "power bi",
+    "knowledge of sql": "sql",
+}
+
+def normalize_skills(skills):
+    normalized = []
+    for skill in skills:
+        s = skill.strip().lower()
+        if s in BLACKLIST:
+            continue
+        # Apply phrase mapping
+        s = PHRASE_MAPPING.get(s, s)
+        normalized.append(s)
+    return list(set(normalized))
+
+def cosine_similarity(v1, v2):
+    if v1 is None or v2 is None or len(v1) == 0 or len(v2) == 0:
+        return 0
+    v1 = np.array(v1)
+    v2 = np.array(v2)
+    dot_product = np.dot(v1, v2)
+    norm_v1 = np.linalg.norm(v1)
+    norm_v2 = np.linalg.norm(v2)
+    if norm_v1 == 0 or norm_v2 == 0:
+        return 0
+    return dot_product / (norm_v1 * norm_v2)
+
+def compute_match(jd_skills, resume_skills, threshold=0.7):
+    if not jd_skills:
+        return {"fit_score": 0.0, "matched_skills": [], "missing_skills": []}
+
+    # Batch embed everything for efficiency
+    resume_embeddings_list = get_embedding(resume_skills) if resume_skills else []
+    resume_embs = {s: e for s, e in zip(resume_skills, resume_embeddings_list)}
+    
+    jd_embeddings_list = get_embedding(jd_skills)
+    jd_embs = {s: e for s, e in zip(jd_skills, jd_embeddings_list)}
+    
+    all_keywords = []
+    jd_to_kws = {}
+    for skill in jd_skills:
+        if " " in skill:
+            kws = [k.strip() for k in skill.split() if len(k.strip()) > 2]
+            jd_to_kws[skill] = kws
+            all_keywords.extend(kws)
+    
+    unique_keywords = list(set(all_keywords))
+    kw_embeddings_list = get_embedding(unique_keywords) if unique_keywords else []
+    kw_embs = {k: e for k, e in zip(unique_keywords, kw_embeddings_list)}
 
     matched = []
     missing = []
-
-    for skill in jd_skills:
-        skill_clean = skill.strip()
-        skill_lower = skill_clean.lower()
-        
-        is_match = False
+    total_score = 0
+    
+    for jd_skill in jd_skills:
+        jd_skill_lower = jd_skill.lower()
+        score = 0
         match_type = None
-
-        # --- STEP 1: EXACT MATCH (Normalized) ---
-        if skill_lower in resume_skills_lower:
-            is_match = True
+        
+        # STEP 1: Exact Match
+        if any(jd_skill_lower == rs.lower() for rs in resume_skills):
+            score = 1.0
             match_type = "EXACT"
-
-        # --- STEP 2: SUBSTRING MATCH (Case-insensitive) ---
-        if not is_match:
-            for r_skill in resume_skills_lower:
-                if skill_lower in r_skill or r_skill in skill_lower:
-                    is_match = True
+        
+        # STEP 2: Substring Match
+        if match_type is None:
+            for rs in resume_skills:
+                rs_lower = rs.lower()
+                if jd_skill_lower in rs_lower or rs_lower in jd_skill_lower:
+                    score = 1.0
                     match_type = "SUBSTRING"
                     break
         
-        if is_match:
-            print(f"✅ Match Found: '{skill_clean}' ({match_type})")
-            matched.append(skill_clean)
-            continue
-
-        # --- STEP 3: SEMANTIC FALLBACK (Vector Store) ---
-        print(f"🔍 Falling back to semantic search for: '{skill_clean}'")
-        try:
-            result = query_skill(skill_clean)
-            # Handle standard Pinecone query response
-            matches = result.get("matches", []) if isinstance(result, dict) else getattr(result, "matches", [])
-
-            if matches:
-                top_match = matches[0]
-                score = top_match.get("score", 0) if isinstance(top_match, dict) else getattr(top_match, "score", 0)
-                metadata = top_match.get("metadata", {}) if isinstance(top_match, dict) else getattr(top_match, "metadata", {})
-                stored_text = metadata.get("text", "")
-
-                if score >= threshold:
-                    print(f"🧬 Semantic Match: '{skill_clean}' (Score: {score:.2f} vs Stored: '{stored_text}')")
-                    matched.append(skill_clean)
-                    is_match = True
-        except Exception as e:
-            print(f"❌ Error during semantic fallback for {skill_clean}: {e}")
+        # STEP 3: Semantic Match
+        if match_type is None:
+            jd_emb = jd_embs.get(jd_skill)
+            max_sim = 0
+            for rs, rs_emb in resume_embs.items():
+                sim = cosine_similarity(jd_emb, rs_emb)
+                if sim > max_sim:
+                    max_sim = sim
+            
+            if max_sim >= threshold:
+                score = max_sim if max_sim >= 0.75 else max_sim # Scoring rule: Strong semantic >= 0.75 -> similarity score
+                match_type = "SEMANTIC"
         
-        if not is_match:
-            print(f"❌ No Match: '{skill_clean}'")
-            missing.append(skill_clean)
-
-    # 4. Fit Score Calculation
-    fit_score = (len(matched) / len(jd_skills)) * 100 if jd_skills else 0
-
-    # Stable Response Contract
+        # STEP 4: Keyword Fallback
+        if match_type is None and jd_skill in jd_to_kws:
+            kws = jd_to_kws[jd_skill]
+            max_kw_sim = 0
+            for kw in kws:
+                kw_emb = kw_embs.get(kw)
+                for rs, rs_emb in resume_embs.items():
+                    sim = cosine_similarity(kw_emb, rs_emb)
+                    if sim > max_kw_sim:
+                        max_kw_sim = sim
+            
+            if max_kw_sim >= (threshold + 0.05):
+                score = 0.6
+                match_type = "KEYWORD"
+        
+        if match_type:
+            matched.append(jd_skill)
+            total_score += score
+        else:
+            missing.append(jd_skill)
+            
+    fit_score = (total_score / len(jd_skills)) * 100
+    
     return {
-        "fit_score": round(fit_score, 2),
+        "fit_score": round(float(fit_score), 2),
         "matched_skills": matched,
         "missing_skills": missing
     }
+
+def run_matching_pipeline(jd_text: str, resume_text: str):
+    # 1. Extract
+    jd_raw = extract_jd_skills(jd_text)
+    res_raw = extract_resume_skills(resume_text)
+    
+    # 2. Normalize
+    jd_skills = normalize_skills(jd_raw)
+    res_skills = normalize_skills(res_raw)
+    
+    # 3. Match
+    return compute_match(jd_skills, res_skills)
