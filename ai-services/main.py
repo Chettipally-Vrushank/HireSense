@@ -19,6 +19,9 @@ from database.tailored_resume_repository import (
     delete_tailored_resume
 )
 from services.resume_tailor_service import generate_tailored_resume
+from pydantic import BaseModel
+from typing import Optional, List
+
 try:
     from services.pdf_generator_service import generate_pdf_from_resume
 except (ImportError, OSError) as e:
@@ -219,3 +222,47 @@ async def delete_tailored_resume_api(id: str, user_id: str = Depends(get_current
     if not success:
         raise HTTPException(status_code=404, detail="Tailored resume not found")
     return {"status": "success"}
+
+
+@app.delete("/ai/resumes/{id}")
+async def delete_resume_api(id: str, user_id: str = Depends(get_current_user_id)):
+    from database.resume_repository import delete_resume
+    success = await delete_resume(id, user_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Resume not found or access denied")
+    return {"status": "success"}
+
+
+class UserProfileRequest(BaseModel):
+    full_name: Optional[str] = None
+    phone: Optional[str] = None
+    location: Optional[str] = None
+    linkedin: Optional[str] = None
+    github: Optional[str] = None
+    portfolio: Optional[str] = None
+    current_role: Optional[str] = None
+    years_experience: Optional[str] = None
+    target_roles: Optional[List[str]] = []
+    target_industries: Optional[List[str]] = []
+    preferred_locations: Optional[List[str]] = []
+    employment_type: Optional[List[str]] = []   # Full-time, Part-time, Contract, Remote
+    career_summary: Optional[str] = None
+    key_skills: Optional[List[str]] = []
+    certifications: Optional[List[str]] = []
+    languages: Optional[List[str]] = []
+    salary_expectation: Optional[str] = None
+    notice_period: Optional[str] = None
+
+@app.get("/ai/profile")
+async def get_profile_api(user_id: str = Depends(get_current_user_id)):
+    from database.user_profile_repository import get_profile
+    profile = await get_profile(user_id)
+    return profile or {}
+
+@app.put("/ai/profile")
+async def update_profile_api(data: UserProfileRequest, user_id: str = Depends(get_current_user_id)):
+    from database.user_profile_repository import upsert_profile
+    profile = await upsert_profile(user_id, data.dict(exclude_none=True))
+    return profile
+
+

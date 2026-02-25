@@ -34,3 +34,11 @@ async def list_resumes(user_id: str):
     for r in resumes:
         r["_id"] = str(r["_id"])
     return resumes
+
+async def delete_resume(resume_id: str, user_id: str) -> bool:
+    db = get_database()
+    result = await db[COLLECTION_NAME].delete_one({
+        "_id": ObjectId(resume_id),
+        "user_id": user_id
+    })
+    return result.deleted_count > 0

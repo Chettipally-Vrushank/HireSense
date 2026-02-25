@@ -33,8 +33,11 @@ export default function Navbar() {
                         <Link href="/tailor" className="text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors">
                             Tailor Resume
                         </Link>
-                        <Link href="/tailored" className="text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors">
+                        <Link href="/resumes" className="text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors">
                             My Resumes
+                        </Link>
+                        <Link href="/tailored" className="text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors">
+                            Tailored
                         </Link>
                     </div>
 

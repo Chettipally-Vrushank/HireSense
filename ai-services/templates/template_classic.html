@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Resume – {{ name }}</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'IBM Plex Sans', Arial, sans-serif;
+            font-size: 10pt;
+            line-height: 1.5;
+            color: #1a1a1a;
+            background: #fff;
+            padding: 36px 44px;
+        }
+
+        /* ── HEADER ── */
+        .header {
+            border-bottom: 3px solid #111;
+            padding-bottom: 12px;
+            margin-bottom: 18px;
+        }
+
+        .header h1 {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 22pt;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #111;
+        }
+
+        .header .contact {
+            margin-top: 5px;
+            font-size: 9pt;
+            color: #555;
+            letter-spacing: 0.02em;
+        }
+
+        .header .contact span {
+            margin-right: 14px;
+        }
+
+        /* ── SECTIONS ── */
+        .section {
+            margin-bottom: 18px;
+        }
+
+        .section-title {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 8pt;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: #111;
+            border-bottom: 1.5px solid #ddd;
+            padding-bottom: 3px;
+            margin-bottom: 10px;
+        }
+
+        /* ── SKILLS ── */
+        .skills-row {
+            font-size: 9.5pt;
+            color: #333;
+            line-height: 1.8;
+        }
+
+        .skills-row span {
+            margin-right: 4px;
+        }
+
+        .skills-row span::after {
+            content: " ·";
+            color: #aaa;
+        }
+
+        .skills-row span:last-child::after {
+            content: "";
+        }
+
+        /* ── EXPERIENCE / PROJECTS ── */
+        .item {
+            margin-bottom: 14px;
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        .item-company {
+            font-weight: 700;
+            font-size: 10.5pt;
+            color: #111;
+        }
+
+        .item-date {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 8.5pt;
+            color: #888;
+        }
+
+        .item-role {
+            font-style: italic;
+            color: #444;
+            font-size: 9.5pt;
+            margin-bottom: 4px;
+        }
+
+        .item-bullets {
+            padding-left: 14px;
+        }
+
+        .item-bullets li {
+            font-size: 9.5pt;
+            color: #333;
+            margin-bottom: 2px;
+            list-style-type: disc;
+        }
+
+        .project-title {
+            font-weight: 700;
+            font-size: 10pt;
+            color: #111;
+            margin-bottom: 3px;
+        }
+
+        .project-desc {
+            font-size: 9.5pt;
+            color: #444;
+            line-height: 1.5;
+        }
+
+        /* ── EDUCATION ── */
+        .edu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 6px;
+        }
+
+        .edu-left .edu-degree {
+            font-weight: 700;
+            font-size: 10pt;
+        }
+
+        .edu-left .edu-inst {
+            color: #555;
+            font-size: 9pt;
+            font-style: italic;
+        }
+
+        .edu-year {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 8.5pt;
+            color: #888;
+        }
+
+        /* ── SUMMARY ── */
+        .summary {
+            font-size: 9.5pt;
+            color: #333;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>{{ name }}</h1>
+        <div class="contact">
+            {% if email %}<span>{{ email }}</span>{% endif %}
+            {% if phone %}<span>{{ phone }}</span>{% endif %}
+        </div>
+    </div>
+
+    {% if summary %}
+    <div class="section">
+        <div class="section-title">Professional Summary</div>
+        <p class="summary">{{ summary }}</p>
+    </div>
+    {% endif %}
+
+    {% if skills %}
+    <div class="section">
+        <div class="section-title">Skills</div>
+        <div class="skills-row">
+            {% for skill in skills %}<span>{{ skill }}</span>{% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if experience %}
+    <div class="section">
+        <div class="section-title">Work Experience</div>
+        {% for exp in experience %}
+        <div class="item">
+            <div class="item-header">
+                <span class="item-company">{{ exp.company }}</span>
+                <span class="item-date">{{ exp.duration }}</span>
+            </div>
+            <div class="item-role">{{ exp.role }}</div>
+            {% if exp.bullets %}
+            <ul class="item-bullets">
+                {% for b in exp.bullets %}<li>{{ b }}</li>{% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if projects %}
+    <div class="section">
+        <div class="section-title">Projects</div>
+        {% for project in projects %}
+        <div class="item">
+            <div class="project-title">{{ project.title }}</div>
+            <div class="project-desc">{{ project.description }}</div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if education %}
+    <div class="section">
+        <div class="section-title">Education</div>
+        {% for edu in education %}
+        <div class="edu-item">
+            <div class="edu-left">
+                <div class="edu-degree">{{ edu.degree }}</div>
+                <div class="edu-inst">{{ edu.institution }}</div>
+            </div>
+            <div class="edu-year">{{ edu.year }}</div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+</body>
+
+</html>
