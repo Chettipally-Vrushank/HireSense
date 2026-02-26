@@ -113,50 +113,33 @@ export default function MyResumesPage() {
 
     const getInitials = (name?: string) => {
         if (!name) return "?"
-        return name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)
+        return name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 1)
     }
 
     return (
         <ProtectedLayout>
-            {/* Toast */}
-            {toast && (
-                <div className={`fixed top-6 right-6 z-50 px-5 py-3 rounded-2xl text-sm font-bold shadow-xl transition-all animate-slide-up
-                    ${toast.type === "success"
-                        ? "bg-green-600 text-white shadow-green-200"
-                        : "bg-red-500 text-white shadow-red-200"}`}>
-                    {toast.type === "success" ? "✓ " : "✕ "}{toast.message}
-                </div>
-            )}
-
-            <div className="max-w-5xl mx-auto space-y-10">
+            <div className="max-w-6xl mx-auto space-y-12 animate-fade-in pb-20">
 
                 {/* Header */}
-                <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+                <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
                     <div>
-                        <h1 className="text-4xl font-black text-gray-900 mb-1">My Resumes</h1>
-                        <p className="text-gray-500 font-medium">
+                        <span className="text-xs font-bold uppercase tracking-widest text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-3 py-1 rounded-full mb-4 inline-block">Library</span>
+                        <h1 className="text-4xl sm:text-5xl font-black text-white">Original Resumes</h1>
+                        <p className="text-white/45 text-lg mt-2 font-medium">
                             {resumes.length > 0
-                                ? `${resumes.length} resume${resumes.length > 1 ? "s" : ""} uploaded`
-                                : "Upload your first resume to get started"}
+                                ? `Managing ${resumes.length} profile${resumes.length > 1 ? "s" : ""} for analysis.`
+                                : "Upload your master resume as a starting point."}
                         </p>
                     </div>
                     <button
                         onClick={() => fileInputRef.current?.click()}
                         disabled={uploading}
-                        className="flex items-center gap-2 px-5 py-3 bg-indigo-600 text-white font-bold rounded-2xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 disabled:opacity-50"
+                        className="px-8 py-4 bg-indigo-600 text-white font-black rounded-2xl hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-500/20 hover:-translate-y-1 active:scale-95 flex items-center gap-3 disabled:opacity-50"
                     >
                         {uploading ? (
-                            <>
-                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                Uploading...
-                            </>
+                            <><div className="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin" /> Processing...</>
                         ) : (
-                            <>
-                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
-                                </svg>
-                                Upload Resume
-                            </>
+                            <><span className="text-xl">+</span> Upload New</>
                         )}
                     </button>
                     <input
@@ -168,180 +151,153 @@ export default function MyResumesPage() {
                     />
                 </header>
 
-                {/* Upload Drop Zone — shown when no resumes or always */}
+                {/* Upload Drop Zone */}
                 <div
                     onDragEnter={handleDrag}
                     onDragLeave={handleDrag}
                     onDragOver={handleDrag}
                     onDrop={handleDrop}
                     onClick={() => fileInputRef.current?.click()}
-                    className={`cursor-pointer border-2 border-dashed rounded-[2rem] p-10 flex flex-col items-center justify-center text-center transition-all
+                    className={`cursor-pointer border-2 border-dashed rounded-[3rem] p-14 flex flex-col items-center justify-center text-center transition-all relative overflow-hidden group
                         ${dragActive
-                            ? "border-indigo-500 bg-indigo-50 scale-[1.01]"
-                            : "border-gray-200 bg-gray-50/50 hover:border-indigo-300 hover:bg-indigo-50/30"}`}
+                            ? "border-indigo-500 bg-indigo-500/10 scale-[1.01]"
+                            : "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10"}`}
                 >
-                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-4 transition-all
-                        ${dragActive ? "bg-indigo-100 text-indigo-600" : "bg-white text-gray-400 shadow-sm"}`}>
+                    <div className="absolute inset-0 bg-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                    <div className={`w-20 h-20 rounded-[2rem] flex items-center justify-center mb-6 transition-all relative z-10
+                        ${dragActive ? "bg-indigo-500 text-white shadow-2xl" : "bg-white/10 text-white/30 border border-white/10 shadow-lg"}`}>
                         {uploading ? (
-                            <div className="w-6 h-6 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin" />
+                            <div className="w-8 h-8 border-3 border-white/30 border-t-white rounded-full animate-spin" />
                         ) : (
-                            <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg className="w-9 h-9" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
                                     d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                             </svg>
                         )}
                     </div>
-                    <p className="font-bold text-gray-700 mb-1">
-                        {uploading ? "Processing your resume..." : dragActive ? "Drop it here!" : "Drag & drop your PDF here"}
+                    <p className="text-xl font-black text-white mb-2 relative z-10">
+                        {uploading ? "Analyzing document structure..." : dragActive ? "Release to upload" : "Import Master Resume"}
                     </p>
-                    <p className="text-sm text-gray-400 font-medium">or click to browse · PDF only</p>
+                    <p className="text-white/40 font-bold uppercase tracking-widest text-xs relative z-10">Drag PDF here or click to browse</p>
                 </div>
 
                 {/* Resume List */}
                 {loading ? (
-                    <div className="flex justify-center py-20">
-                        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600" />
+                    <div className="flex flex-col items-center justify-center py-32 space-y-4">
+                        <div className="w-16 h-16 border-4 border-white/5 border-t-indigo-500 rounded-full animate-spin" />
+                        <p className="text-white/40 font-bold uppercase tracking-widest text-xs animate-pulse">Scanning Archive...</p>
                     </div>
                 ) : resumes.length > 0 ? (
-                    <div className="space-y-4">
+                    <div className="grid grid-cols-1 gap-6">
                         {resumes.map((resume, index) => {
-                            const name = resume.parsed_data?.name || "Unnamed Resume"
+                            const name = resume.parsed_data?.name || "Unnamed Document"
                             const skillCount = resume.extracted_skills?.length || 0
-                            const skills = resume.extracted_skills?.slice(0, 5) || []
-                            const remaining = (resume.extracted_skills?.length || 0) - 5
+                            const skills = resume.extracted_skills?.slice(0, 6) || []
+                            const remaining = (resume.extracted_skills?.length || 0) - 6
                             const isDeleting = deletingId === resume._id
 
                             return (
                                 <div
                                     key={resume._id}
-                                    className="group bg-white rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-gray-200/60 hover:border-indigo-100 transition-all duration-300 overflow-hidden"
+                                    className="group bg-white/5 backdrop-blur-md rounded-[2.5rem] border border-white/10 shadow-2xl hover:border-indigo-500/30 transition-all duration-300 overflow-hidden relative"
                                 >
-                                    <div className="p-6 flex flex-col sm:flex-row items-start sm:items-center gap-5">
-
-                                        {/* Avatar */}
-                                        <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-2xl flex items-center justify-center text-white font-black text-lg shadow-lg shadow-indigo-200">
-                                            {getInitials(resume.parsed_data?.name)}
+                                    <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 to-transparent pointer-events-none" />
+                                    <div className="p-8 flex flex-col sm:flex-row items-start sm:items-center gap-8 relative z-10">
+                                        <div className="flex-shrink-0 w-20 h-20 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-3xl flex items-center justify-center text-white font-black text-2xl shadow-xl shadow-indigo-500/20">
+                                            {getInitials(name)}
                                         </div>
 
-                                        {/* Info */}
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-start justify-between gap-3 mb-2">
+                                        <div className="flex-1 min-w-0 space-y-4">
+                                            <div className="flex items-start justify-between gap-6">
                                                 <div>
-                                                    <h3 className="text-lg font-black text-gray-900 group-hover:text-indigo-600 transition-colors truncate">
+                                                    <h3 className="text-2xl font-black text-white group-hover:text-indigo-400 transition-colors truncate">
                                                         {name}
                                                     </h3>
-                                                    <p className="text-xs text-gray-400 font-medium mt-0.5 flex items-center gap-2">
-                                                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                        </svg>
-                                                        Uploaded {formatDate(resume.uploaded_at)}
-                                                        <span className="w-1 h-1 rounded-full bg-gray-300 inline-block" />
-                                                        <span className="text-indigo-500 font-bold">{skillCount} skills</span>
-                                                    </p>
+                                                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-bold uppercase tracking-widest mt-2">
+                                                        <span className="text-indigo-400 flex items-center gap-1.5">
+                                                            <span className="w-2 h-2 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.6)]" />
+                                                            PDF DOCUMENT
+                                                        </span>
+                                                        <span className="text-white/30 flex items-center gap-1.5">
+                                                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                                            {formatDate(resume.uploaded_at)}
+                                                        </span>
+                                                        <span className="text-emerald-400/80 bg-emerald-500/10 px-2 py-0.5 rounded-lg border border-emerald-500/20">
+                                                            {skillCount} SKILLS EXTRACTED
+                                                        </span>
+                                                    </div>
                                                 </div>
-
-                                                {/* Resume number badge */}
-                                                <span className="flex-shrink-0 text-xs font-black text-gray-300 bg-gray-50 rounded-xl px-2.5 py-1">
-                                                    #{resumes.length - index}
+                                                <span className="hidden sm:flex flex-shrink-0 text-[10px] font-black text-white/10 border border-white/5 rounded-xl px-3 py-1.5 bg-white/5 items-center">
+                                                    ID: #{resume._id.slice(-4).toUpperCase()}
                                                 </span>
                                             </div>
 
-                                            {/* Skills preview */}
                                             {skills.length > 0 && (
-                                                <div className="flex flex-wrap gap-1.5 mt-2">
+                                                <div className="flex flex-wrap gap-2">
                                                     {skills.map((skill, i) => (
-                                                        <span key={i} className="px-2.5 py-0.5 bg-indigo-50 text-indigo-600 text-xs font-bold rounded-lg border border-indigo-100">
+                                                        <span key={i} className="px-3 py-1.5 bg-black/20 border border-white/5 text-white/50 text-[10px] font-black uppercase tracking-widest rounded-xl group-hover:text-indigo-300 group-hover:border-indigo-500/20 transition-all">
                                                             {skill}
                                                         </span>
                                                     ))}
                                                     {remaining > 0 && (
-                                                        <span className="px-2.5 py-0.5 bg-gray-50 text-gray-500 text-xs font-bold rounded-lg border border-gray-100">
-                                                            +{remaining} more
+                                                        <span className="px-3 py-1.5 bg-white/5 text-white/20 text-[10px] font-black uppercase tracking-widest rounded-xl">
+                                                            +{remaining} MORE
                                                         </span>
                                                     )}
                                                 </div>
                                             )}
                                         </div>
 
-                                        {/* Action Buttons */}
-                                        <div className="flex items-center gap-2 flex-shrink-0 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-200">
-                                            {/* Analyse */}
+                                        <div className="flex items-center gap-3 w-full sm:w-auto pt-4 sm:pt-0 border-t border-white/5 sm:border-0">
                                             <Link
                                                 href={`/analyze?id=${resume._id}`}
-                                                className="flex items-center gap-1.5 px-4 py-2 bg-gray-50 hover:bg-indigo-50 text-gray-600 hover:text-indigo-600 font-bold rounded-xl transition-all text-sm border border-gray-100 hover:border-indigo-200"
+                                                className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 text-white font-black rounded-[1.25rem] transition-all text-sm border border-white/5"
                                             >
-                                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                                </svg>
                                                 Analyse
                                             </Link>
-
-                                            {/* Tailor */}
                                             <Link
                                                 href={`/tailor?id=${resume._id}`}
-                                                className="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all text-sm shadow-md shadow-indigo-100"
+                                                className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-[1.25rem] transition-all text-sm shadow-xl shadow-indigo-500/20"
                                             >
-                                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                                </svg>
                                                 Tailor
                                             </Link>
-
-                                            {/* Delete */}
                                             <button
                                                 onClick={() => handleDelete(resume._id)}
                                                 disabled={isDeleting}
-                                                className="w-9 h-9 flex items-center justify-center rounded-xl text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all border border-transparent hover:border-red-100 disabled:opacity-50"
-                                                title="Delete resume"
+                                                className="w-11 h-11 flex items-center justify-center rounded-[1.25rem] text-white/20 hover:text-red-400 bg-white/5 hover:bg-red-500/10 transition-all border border-white/5 hover:border-red-500/20 disabled:opacity-50"
                                             >
                                                 {isDeleting ? (
-                                                    <div className="w-4 h-4 border-2 border-red-200 border-t-red-500 rounded-full animate-spin" />
+                                                    <div className="w-4 h-4 border-2 border-red-500/30 border-t-red-500 rounded-full animate-spin" />
                                                 ) : (
-                                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                     </svg>
                                                 )}
                                             </button>
                                         </div>
                                     </div>
-
-                                    {/* Bottom action bar — always visible on mobile, hover on desktop */}
-                                    <div className="sm:hidden border-t border-gray-50 px-6 py-3 flex gap-2">
-                                        <Link href={`/analyze?id=${resume._id}`}
-                                            className="flex-1 py-2 text-center text-sm font-bold text-gray-600 bg-gray-50 rounded-xl hover:bg-indigo-50 hover:text-indigo-600 transition-all">
-                                            Analyse
-                                        </Link>
-                                        <Link href={`/tailor?id=${resume._id}`}
-                                            className="flex-1 py-2 text-center text-sm font-bold text-white bg-indigo-600 rounded-xl hover:bg-indigo-700 transition-all">
-                                            Tailor
-                                        </Link>
-                                        <button
-                                            onClick={() => handleDelete(resume._id)}
-                                            className="px-3 py-2 text-gray-400 hover:text-red-500 bg-gray-50 rounded-xl hover:bg-red-50 transition-all text-sm font-bold">
-                                            Del
-                                        </button>
-                                    </div>
                                 </div>
                             )
                         })}
                     </div>
                 ) : (
-                    <div className="text-center py-20 bg-gray-50 rounded-[3rem] border-2 border-dashed border-gray-200">
-                        <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-6 text-gray-200 shadow-inner">
-                            <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
+                    <div className="text-center py-32 bg-white/5 rounded-[4rem] border-2 border-dashed border-white/10 relative overflow-hidden group">
+                        <div className="absolute inset-0 bg-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                        <div className="relative z-10">
+                            <div className="w-24 h-24 bg-white/5 border border-white/10 rounded-full flex items-center justify-center mx-auto mb-8 text-white/20 shadow-2xl">
+                                <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                            </div>
+                            <h3 className="text-3xl font-black text-white mb-3">No master resumes yet</h3>
+                            <p className="text-white/45 font-medium mb-10 max-w-sm mx-auto">Upload your master resume as a starting point for AI analysis and tailoring.</p>
+                            <button
+                                onClick={() => fileInputRef.current?.click()}
+                                className="inline-flex items-center gap-3 px-10 py-4 bg-indigo-600 text-white font-black rounded-2xl hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-500/20 active:scale-95"
+                            >
+                                Upload Master <span className="text-xl">→</span>
+                            </button>
                         </div>
-                        <h3 className="text-2xl font-black text-gray-900 mb-2">No resumes yet</h3>
-                        <p className="text-gray-500 font-medium mb-8 max-w-xs mx-auto">
-                            Upload your first resume to start analyzing and tailoring it for any job.
-                        </p>
-                        <button
-                            onClick={() => fileInputRef.current?.click()}
-                            className="text-indigo-600 font-black text-lg hover:underline"
-                        >
-                            Upload now →
-                        </button>
                     </div>
                 )}
             </div>

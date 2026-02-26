@@ -35,7 +35,7 @@ export function ResumeUpload({ onFileSelect }: { onFileSelect: (file: File) => v
 
     return (
         <div
-            className={`relative group border-2 border-dashed rounded-[2rem] p-10 transition-all flex flex-col items-center justify-center text-center ${dragActive ? "border-indigo-600 bg-indigo-50/50" : "border-gray-200 bg-gray-50/50 hover:bg-gray-50 hover:border-indigo-400"
+            className={`relative group border-2 border-dashed rounded-[2rem] p-10 transition-all flex flex-col items-center justify-center text-center cursor-pointer ${dragActive ? "border-indigo-500 bg-indigo-500/10" : "border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20"
                 }`}
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
@@ -44,78 +44,83 @@ export function ResumeUpload({ onFileSelect }: { onFileSelect: (file: File) => v
             onClick={() => inputRef.current?.click()}
         >
             <input ref={inputRef} type="file" accept=".pdf" className="hidden" onChange={handleChange} />
-            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-4 transition-transform group-hover:scale-110 ${fileName ? "bg-green-100 text-green-600" : "bg-white text-indigo-600 shadow-sm"}`}>
+            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-4 transition-transform group-hover:scale-110 shadow-lg ${fileName ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" : "bg-white/10 text-indigo-400 border border-white/10"}`}>
                 {fileName ? (
-                    <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                    <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
                 ) : (
-                    <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
+                    <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
                 )}
             </div>
-            <p className="text-lg font-bold text-gray-900 mb-1">{fileName || "Upload Resume PDF"}</p>
-            <p className="text-gray-600 font-medium text-sm">Drag and drop or click to browse</p>
+            <p className="text-lg font-black text-white mb-1">{fileName || "Upload Resume PDF"}</p>
+            <p className="text-white/40 font-semibold text-sm">Drag and drop or click to browse</p>
         </div>
     )
 }
 
 export function MatchResult({ result, onGenerateRecs, recLoading }: { result: any, onGenerateRecs: () => void, recLoading: boolean }) {
     const score = result?.fit_score || 0
-    const colorClass = score > 70 ? "text-green-600" : score > 40 ? "text-amber-600" : "text-red-600"
-    const bgClass = score > 70 ? "bg-green-600" : score > 40 ? "bg-amber-600" : "bg-red-600"
+    const colorClass = score > 70 ? "text-emerald-400" : score > 40 ? "text-amber-400" : "text-red-400"
+    const bgClass = score > 70 ? "bg-emerald-400" : score > 40 ? "bg-amber-400" : "bg-red-400"
 
     return (
-        <div className="bg-white rounded-[2.5rem] p-8 border border-gray-100 shadow-xl shadow-gray-200/50 animate-slide-up">
-            <div className="flex flex-col md:flex-row items-center gap-12 mb-10">
-                <div className="relative w-40 h-40 flex items-center justify-center">
+        <div className="bg-white/5 backdrop-blur-md rounded-[2.5rem] p-8 sm:p-10 border border-white/10 shadow-2xl animate-slide-up">
+            <div className="flex flex-col md:flex-row items-center gap-10 md:gap-14 mb-10">
+                <div className="relative w-44 h-44 flex items-center justify-center">
                     <svg className="w-full h-full transform -rotate-90">
-                        <circle cx="80" cy="80" r="70" stroke="currentColor" strokeWidth="12" fill="transparent" className="text-gray-100" />
+                        <circle cx="88" cy="88" r="76" stroke="rgba(255,255,255,0.05)" strokeWidth="12" fill="transparent" />
                         <circle
-                            cx="80" cy="80" r="70" stroke="currentColor" strokeWidth="12" fill="transparent"
-                            strokeDasharray={440} strokeDashoffset={440 - (440 * score) / 100}
-                            strokeLinecap="round" className={colorClass}
+                            cx="88" cy="88" r="76" stroke="currentColor" strokeWidth="12" fill="transparent"
+                            strokeDasharray={478} strokeDashoffset={478 - (478 * score) / 100}
+                            strokeLinecap="round" className={`${colorClass} transition-all duration-1000 ease-out`}
+                            style={{ filter: "drop-shadow(0 0 8px currentColor)" }}
                         />
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <span className={`text-4xl font-black ${colorClass}`}>{score}%</span>
-                        <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Fit Score</span>
+                        <span className={`text-5xl font-black tracking-tighter ${colorClass}`}>{score}%</span>
+                        <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Match Fit</span>
                     </div>
                 </div>
 
                 <div className="flex-1 space-y-6 text-center md:text-left">
                     <div>
-                        <h3 className="text-2xl font-black text-gray-900 mb-2">Analysis Complete!</h3>
-                        <p className="text-gray-600 font-medium leading-relaxed">We've compared your profile against the job requirements. Here's how you stack up.</p>
+                        <h3 className="text-3xl font-black text-white mb-3">Analysis Result</h3>
+                        <p className="text-white/45 font-medium leading-relaxed max-w-md">Our AI analyzed your experience against the job requirements. Here's your compatibility breakdown.</p>
                     </div>
                     {!result.recommendations && (
                         <button
                             onClick={onGenerateRecs}
                             disabled={recLoading}
-                            className="px-8 py-3 bg-indigo-600 text-white font-bold rounded-2xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 disabled:opacity-50"
+                            className="px-10 py-3.5 bg-indigo-600 text-white font-bold rounded-2xl hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-500/20 disabled:opacity-50 flex items-center gap-3 mx-auto md:mx-0"
                         >
-                            {recLoading ? "Analyzing Gaps..." : "🎯 Generate AI Roadmap"}
+                            {recLoading ? (
+                                <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Analyzing Gaps...</>
+                            ) : (
+                                <>🎯 Generate AI Roadmap</>
+                            )}
                         </button>
                     )}
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="bg-green-50/50 rounded-3xl p-6 border border-green-100/50">
-                    <h4 className="text-sm font-bold text-green-800 uppercase tracking-widest mb-4 flex items-center gap-2">
-                        <span className="block w-2 h-2 rounded-full bg-green-500"></span> Matched Skills
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-white/5">
+                <div className="bg-emerald-500/5 rounded-3xl p-7 border border-emerald-500/10">
+                    <h4 className="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em] mb-5 flex items-center gap-2">
+                        <span className="block w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]"></span> Matched Skills
                     </h4>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-2.5">
                         {result.matched_skills?.map((s: string, i: number) => (
-                            <span key={i} className="px-4 py-2 bg-white border border-green-200 text-green-700 rounded-xl text-sm font-bold shadow-sm whitespace-nowrap">{s}</span>
+                            <span key={i} className="px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 rounded-xl text-xs font-bold shadow-sm">{s}</span>
                         ))}
                     </div>
                 </div>
 
-                <div className="bg-red-50/50 rounded-3xl p-6 border border-red-100/50">
-                    <h4 className="text-sm font-bold text-red-800 uppercase tracking-widest mb-4 flex items-center gap-2">
-                        <span className="block w-2 h-2 rounded-full bg-red-500"></span> Missing Skills
+                <div className="bg-red-500/5 rounded-3xl p-7 border border-red-500/10">
+                    <h4 className="text-[10px] font-black text-red-400 uppercase tracking-[0.2em] mb-5 flex items-center gap-2">
+                        <span className="block w-2 h-2 rounded-full bg-red-400 shadow-[0_0_8px_rgba(248,113,113,0.6)]"></span> Missing Skills
                     </h4>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-2.5">
                         {result.missing_skills?.map((s: string, i: number) => (
-                            <span key={i} className="px-4 py-2 bg-white border border-red-200 text-red-700 rounded-xl text-sm font-bold shadow-sm whitespace-nowrap">{s}</span>
+                            <span key={i} className="px-4 py-2 bg-red-500/10 border border-red-500/20 text-red-300 rounded-xl text-xs font-bold shadow-sm">{s}</span>
                         ))}
                     </div>
                 </div>

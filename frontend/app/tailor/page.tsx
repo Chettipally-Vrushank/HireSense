@@ -89,13 +89,14 @@ function ResumeEditor({ data, onChange }: { data: ResumeData; onChange: (d: Resu
     return (
         <div className="space-y-6">
             {/* Contact */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-5">
-                <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest mb-4">Contact</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent pointer-events-none" />
+                <h3 className="text-[11px] font-black text-white/30 uppercase tracking-[0.2em] mb-6 px-1 relative z-10">Contact Information</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 relative z-10">
                     {(["name", "email", "phone"] as const).map(f => (
                         <div key={f}>
-                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">{f}</label>
-                            <input className="w-full px-3 py-2 rounded-xl border border-gray-100 bg-gray-50/50 focus:border-indigo-400 outline-none text-sm text-gray-900 font-semibold transition-all"
+                            <label className="text-[10px] font-bold text-white/20 uppercase tracking-widest block mb-2 px-1">{f}</label>
+                            <input className="w-full px-5 py-3 rounded-2xl border border-white/5 bg-white/5 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none text-sm text-white font-bold transition-all placeholder:text-white/10"
                                 value={(data as any)[f] || ""} onChange={e => set(f)(e.target.value)} />
                         </div>
                     ))}
@@ -103,20 +104,22 @@ function ResumeEditor({ data, onChange }: { data: ResumeData; onChange: (d: Resu
             </div>
 
             {/* Summary */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-5">
-                <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest mb-3">Professional Summary</h3>
-                <textarea rows={3}
-                    className="w-full px-3 py-2.5 rounded-xl border border-gray-100 bg-gray-50/50 focus:border-indigo-400 outline-none text-sm text-gray-800 font-medium resize-none transition-all"
+            <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent pointer-events-none" />
+                <h3 className="text-[11px] font-black text-white/30 uppercase tracking-[0.2em] mb-6 px-1 relative z-10">Professional Summary</h3>
+                <textarea rows={4}
+                    className="w-full px-6 py-5 rounded-3xl border border-white/5 bg-white/5 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none text-sm text-white font-bold resize-none transition-all placeholder:text-white/10 relative z-10"
                     value={data.summary || ""} onChange={e => set("summary")(e.target.value)} />
             </div>
 
             {/* Skills */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-5">
-                <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest mb-3">Skills</h3>
-                <div className="space-y-2">
+            <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent pointer-events-none" />
+                <h3 className="text-[11px] font-black text-white/30 uppercase tracking-[0.2em] mb-6 px-1 relative z-10">Technical Skills</h3>
+                <div className="space-y-3 relative z-10">
                     {(data.skills || []).map((skill, i) => (
-                        <div key={i} className="flex gap-2 items-center">
-                            <input className="flex-1 px-3 py-1.5 rounded-xl border border-gray-100 bg-gray-50/50 focus:border-indigo-400 outline-none text-sm text-gray-800"
+                        <div key={i} className="flex gap-3 items-center group/skill">
+                            <input className="flex-1 px-5 py-3 rounded-2xl border border-white/5 bg-white/5 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none text-sm text-white font-bold"
                                 value={skill}
                                 onChange={e => {
                                     const s = [...(data.skills || [])]
@@ -124,25 +127,26 @@ function ResumeEditor({ data, onChange }: { data: ResumeData; onChange: (d: Resu
                                     set("skills")(s)
                                 }} />
                             <button onClick={() => set("skills")((data.skills || []).filter((_, j) => j !== i))}
-                                className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-300 hover:text-red-400 hover:bg-red-50 transition-all">×</button>
+                                className="w-10 h-10 flex items-center justify-center rounded-xl text-white/20 hover:text-red-400 hover:bg-red-400/10 transition-all">×</button>
                         </div>
                     ))}
                     <button onClick={() => set("skills")([...(data.skills || []), ""])}
-                        className="text-xs font-bold text-indigo-500 hover:text-indigo-700 transition-colors">+ Add skill</button>
+                        className="text-xs font-black text-indigo-400 hover:text-indigo-300 transition-colors uppercase tracking-widest">+ Add Intelligence Node</button>
                 </div>
             </div>
 
             {/* Experience */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-5">
-                <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest mb-4">Experience</h3>
-                <div className="space-y-5">
+            <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent pointer-events-none" />
+                <h3 className="text-[11px] font-black text-white/30 uppercase tracking-[0.2em] mb-6 px-1 relative z-10">Professional Experience</h3>
+                <div className="space-y-6 relative z-10">
                     {(data.experience || []).map((exp, i) => (
-                        <div key={i} className="border border-gray-100 rounded-xl p-4 space-y-3 bg-gray-50/30">
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div key={i} className="border border-white/5 rounded-3xl p-6 space-y-4 bg-white/5 relative group/exp">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 {(["company", "role", "duration"] as const).map(f => (
                                     <div key={f}>
-                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">{f}</label>
-                                        <input className="w-full px-3 py-2 rounded-xl border border-gray-100 bg-white focus:border-indigo-400 outline-none text-sm font-semibold"
+                                        <label className="text-[10px] font-bold text-white/20 uppercase tracking-widest block mb-2 px-1">{f}</label>
+                                        <input className="w-full px-5 py-3 rounded-2xl border border-white/5 bg-white/5 focus:border-indigo-400 outline-none text-sm text-white font-bold"
                                             value={exp[f] || ""}
                                             onChange={e => {
                                                 const exps = [...(data.experience || [])]
@@ -153,46 +157,53 @@ function ResumeEditor({ data, onChange }: { data: ResumeData; onChange: (d: Resu
                                 ))}
                             </div>
                             <div>
-                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Bullet Points</label>
-                                {(exp.bullets || []).map((b, j) => (
-                                    <div key={j} className="flex gap-2 items-start mb-2">
-                                        <span className="text-gray-300 mt-2.5 text-xs">•</span>
-                                        <input className="flex-1 px-3 py-2 rounded-xl border border-gray-100 bg-white focus:border-indigo-400 outline-none text-sm text-gray-700"
-                                            value={b}
-                                            onChange={e => {
+                                <label className="text-[10px] font-bold text-white/20 uppercase tracking-widest block mb-3 px-1">Performance Bullets</label>
+                                <div className="space-y-3">
+                                    {(exp.bullets || []).map((b, j) => (
+                                        <div key={j} className="flex gap-3 items-start group/bullet">
+                                            <span className="text-indigo-500 mt-3 text-xs opacity-50">•</span>
+                                            <input className="flex-1 px-5 py-2.5 rounded-2xl border border-white/5 bg-white/5 focus:border-indigo-400 outline-none text-sm text-white/80 font-medium"
+                                                value={b}
+                                                onChange={e => {
+                                                    const exps = [...(data.experience || [])]
+                                                    const bullets = [...(exps[i].bullets || [])]
+                                                    bullets[j] = e.target.value
+                                                    exps[i] = { ...exps[i], bullets }
+                                                    set("experience")(exps)
+                                                }} />
+                                            <button onClick={() => {
                                                 const exps = [...(data.experience || [])]
-                                                const bullets = [...(exps[i].bullets || [])]
-                                                bullets[j] = e.target.value
-                                                exps[i] = { ...exps[i], bullets }
+                                                exps[i] = { ...exps[i], bullets: exps[i].bullets.filter((_, k) => k !== j) }
                                                 set("experience")(exps)
-                                            }} />
-                                        <button onClick={() => {
-                                            const exps = [...(data.experience || [])]
-                                            exps[i] = { ...exps[i], bullets: exps[i].bullets.filter((_, k) => k !== j) }
-                                            set("experience")(exps)
-                                        }} className="w-7 h-7 mt-0.5 flex items-center justify-center rounded-lg text-gray-300 hover:text-red-400 hover:bg-red-50 transition-all">×</button>
-                                    </div>
-                                ))}
+                                            }} className="w-9 h-9 mt-0.5 flex items-center justify-center rounded-xl text-white/10 hover:text-red-400 hover:bg-red-500/10 transition-all">×</button>
+                                        </div>
+                                    ))}
+                                </div>
                                 <button onClick={() => {
                                     const exps = [...(data.experience || [])]
                                     exps[i] = { ...exps[i], bullets: [...(exps[i].bullets || []), ""] }
                                     set("experience")(exps)
-                                }} className="text-xs font-bold text-indigo-500 hover:text-indigo-700 mt-1 transition-colors">+ Add bullet</button>
+                                }} className="text-[10px] font-black text-indigo-400 hover:text-indigo-300 transition-colors uppercase mt-4 tracking-widest ml-1">+ Add Strategic Bullet</button>
                             </div>
+                            <button onClick={() => set("experience")((data.experience || []).filter((_, j) => j !== i))}
+                                className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-lg text-white/10 hover:text-red-400 hover:bg-red-500/10 transition-all opacity-0 group-hover/exp:opacity-100">×</button>
                         </div>
                     ))}
+                    <button onClick={() => set("experience")([...(data.experience || []), { company: "", role: "", duration: "", bullets: [""] }])}
+                        className="text-xs font-black text-indigo-400 hover:text-indigo-300 transition-colors uppercase tracking-widest">+ Insert Career Block</button>
                 </div>
             </div>
 
             {/* Projects */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-5">
-                <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest mb-4">Projects</h3>
-                <div className="space-y-4">
+            <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent pointer-events-none" />
+                <h3 className="text-[11px] font-black text-white/30 uppercase tracking-[0.2em] mb-6 px-1 relative z-10">Strategic Projects</h3>
+                <div className="space-y-6 relative z-10">
                     {(data.projects || []).map((proj, i) => (
-                        <div key={i} className="border border-gray-100 rounded-xl p-4 space-y-3 bg-gray-50/30">
+                        <div key={i} className="border border-white/5 rounded-3xl p-6 space-y-4 bg-white/5 relative group/proj">
                             <div>
-                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Title</label>
-                                <input className="w-full px-3 py-2 rounded-xl border border-gray-100 bg-white focus:border-indigo-400 outline-none text-sm font-semibold"
+                                <label className="text-[10px] font-bold text-white/20 uppercase tracking-widest block mb-2 px-1">Identity</label>
+                                <input className="w-full px-5 py-3 rounded-2xl border border-white/5 bg-white/5 focus:border-indigo-400 outline-none text-sm text-white font-bold"
                                     value={proj.title || ""}
                                     onChange={e => {
                                         const ps = [...(data.projects || [])]
@@ -201,9 +212,9 @@ function ResumeEditor({ data, onChange }: { data: ResumeData; onChange: (d: Resu
                                     }} />
                             </div>
                             <div>
-                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Description</label>
-                                <textarea rows={2}
-                                    className="w-full px-3 py-2 rounded-xl border border-gray-100 bg-white focus:border-indigo-400 outline-none text-sm text-gray-700 resize-none"
+                                <label className="text-[10px] font-bold text-white/20 uppercase tracking-widest block mb-2 px-1">Description</label>
+                                <textarea rows={3}
+                                    className="w-full px-6 py-4 rounded-2xl border border-white/5 bg-white/5 focus:border-indigo-400 outline-none text-sm text-white/70 font-medium resize-none"
                                     value={proj.description || ""}
                                     onChange={e => {
                                         const ps = [...(data.projects || [])]
@@ -211,21 +222,26 @@ function ResumeEditor({ data, onChange }: { data: ResumeData; onChange: (d: Resu
                                         set("projects")(ps)
                                     }} />
                             </div>
+                            <button onClick={() => set("projects")((data.projects || []).filter((_, j) => j !== i))}
+                                className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-lg text-white/10 hover:text-red-400 hover:bg-red-500/10 transition-all opacity-0 group-hover/proj:opacity-100">×</button>
                         </div>
                     ))}
+                    <button onClick={() => set("projects")([...(data.projects || []), { title: "", description: "" }])}
+                        className="text-xs font-black text-indigo-400 hover:text-indigo-300 transition-colors uppercase tracking-widest">+ Deploy New Project</button>
                 </div>
             </div>
 
             {/* Education */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-5">
-                <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest mb-4">Education</h3>
-                <div className="space-y-3">
+            <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent pointer-events-none" />
+                <h3 className="text-[11px] font-black text-white/30 uppercase tracking-[0.2em] mb-6 px-1 relative z-10">Academic Foundation</h3>
+                <div className="space-y-4 relative z-10">
                     {(data.education || []).map((edu, i) => (
-                        <div key={i} className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 border border-gray-100 rounded-xl bg-gray-50/30">
+                        <div key={i} className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-6 border border-white/5 rounded-3xl bg-white/5 relative group/edu">
                             {(["degree", "institution", "year"] as const).map(f => (
                                 <div key={f}>
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">{f}</label>
-                                    <input className="w-full px-3 py-2 rounded-xl border border-gray-100 bg-white focus:border-indigo-400 outline-none text-sm font-semibold"
+                                    <label className="text-[10px] font-bold text-white/20 uppercase tracking-widest block mb-2 px-1">{f}</label>
+                                    <input className="w-full px-5 py-3 rounded-2xl border border-white/5 bg-white/5 focus:border-indigo-400 outline-none text-sm text-white font-bold"
                                         value={edu[f] || ""}
                                         onChange={e => {
                                             const eds = [...(data.education || [])]
@@ -234,8 +250,12 @@ function ResumeEditor({ data, onChange }: { data: ResumeData; onChange: (d: Resu
                                         }} />
                                 </div>
                             ))}
+                            <button onClick={() => set("education")((data.education || []).filter((_, j) => j !== i))}
+                                className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-lg text-white/10 hover:text-red-400 hover:bg-red-500/10 transition-all opacity-0 group-hover/edu:opacity-100">×</button>
                         </div>
                     ))}
+                    <button onClick={() => set("education")([...(data.education || []), { degree: "", institution: "", year: "" }])}
+                        className="text-xs font-black text-indigo-400 hover:text-indigo-300 transition-colors uppercase tracking-widest">+ Add Educational Node</button>
                 </div>
             </div>
         </div>
@@ -333,9 +353,10 @@ export default function TailorPage() {
 
                 {/* Header */}
                 <header className="text-center">
-                    <h1 className="text-4xl font-black text-gray-900 mb-3">AI Resume Tailor</h1>
-                    <p className="text-gray-500 font-medium text-lg max-w-xl mx-auto">
-                        Upload a resume, paste a job description, pick your template — done.
+                    <span className="text-xs font-bold uppercase tracking-widest text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-3 py-1 rounded-full">AI Optimization</span>
+                    <h1 className="text-4xl sm:text-5xl font-black text-white mt-4 mb-3">AI Resume Tailor</h1>
+                    <p className="text-white/45 text-lg font-medium max-w-xl mx-auto leading-relaxed">
+                        Upload your profile, paste the job requirements, and let our AI create the perfect match.
                     </p>
                 </header>
 
@@ -344,58 +365,65 @@ export default function TailorPage() {
                     <div className="space-y-10">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             {/* Resume */}
-                            <div className="space-y-4">
-                                <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                                    <span className="w-8 h-8 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center text-sm font-black">1</span>
-                                    {selectedResumeId ? "Resume Selected" : "Upload Resume"}
+                            <div className="space-y-6">
+                                <h2 className="text-xl font-bold text-white flex items-center gap-3">
+                                    <span className="w-9 h-9 bg-white/5 border border-white/10 text-indigo-400 rounded-xl flex items-center justify-center text-sm font-black">1</span>
+                                    {selectedResumeId ? "Resume Selected" : "Your Resume"}
                                 </h2>
                                 {selectedResumeId ? (
-                                    <div className="bg-indigo-50 border border-indigo-100 rounded-[2rem] p-6 flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-indigo-600 shadow-sm">
-                                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                    <div className="bg-indigo-500/5 backdrop-blur-md border border-indigo-500/20 rounded-[2.5rem] p-8 flex items-center justify-between shadow-2xl">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center text-indigo-400 border border-white/5 shadow-inner">
+                                                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                                                 </svg>
                                             </div>
                                             <div>
-                                                <p className="font-bold text-gray-900 text-sm">Stored resume selected</p>
-                                                <p className="text-xs text-gray-500">From your My Resumes</p>
+                                                <p className="font-black text-white text-base">Stored Identity</p>
+                                                <p className="text-xs text-indigo-300/50 font-black uppercase tracking-widest">Active Resume Selected</p>
                                             </div>
                                         </div>
                                         <button onClick={() => setSelectedResumeId(null)}
-                                            className="text-xs font-bold text-red-400 hover:text-red-600">Change</button>
+                                            className="text-[10px] font-black text-red-400 hover:text-red-300 uppercase tracking-widest py-2 px-4 bg-red-400/10 rounded-xl border border-red-400/20 transition-all">Reset</button>
                                     </div>
                                 ) : (
-                                    <ResumeUpload onFileSelect={setFile} />
+                                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-[2.5rem] p-1 overflow-hidden shadow-2xl">
+                                        <ResumeUpload onFileSelect={setFile} />
+                                    </div>
                                 )}
                             </div>
 
                             {/* JD */}
-                            <div className="space-y-4">
-                                <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                                    <span className="w-8 h-8 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center text-sm font-black">2</span>
-                                    Job Description
+                            <div className="space-y-6">
+                                <h2 className="text-xl font-bold text-white flex items-center gap-3">
+                                    <span className="w-9 h-9 bg-white/5 border border-white/10 text-indigo-400 rounded-xl flex items-center justify-center text-sm font-black">2</span>
+                                    Job Requirements
                                 </h2>
-                                <textarea rows={9}
-                                    className="w-full px-6 py-5 rounded-[2rem] border border-gray-200 bg-gray-50/50 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50/50 outline-none resize-none text-sm text-gray-800 font-medium transition-all"
-                                    placeholder="Paste the job description here..."
-                                    value={jdText} onChange={e => setJdText(e.target.value)} />
+                                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-[2.5rem] p-6 shadow-2xl">
+                                    <textarea
+                                        className="w-full h-[220px] px-6 py-5 rounded-2xl border border-white/10 bg-white/5 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all resize-none text-sm leading-relaxed text-white font-medium placeholder:text-white/20"
+                                        placeholder="Paste the target job description here..."
+                                        value={jdText} onChange={e => setJdText(e.target.value)} />
+                                </div>
                             </div>
                         </div>
 
-                        <div className="flex justify-center">
+                        <div className="flex justify-center pt-4">
                             <button onClick={handleTailor}
                                 disabled={loading || (!file && !selectedResumeId) || !jdText}
-                                className="group px-12 py-5 bg-gray-900 text-white text-lg font-bold rounded-[2rem] hover:bg-black transition-all shadow-2xl shadow-gray-300 disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-3">
-                                {loading ? (
-                                    <><div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Generating Magic...</>
-                                ) : (
-                                    <>Tailor My Resume
-                                        <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                                        </svg>
-                                    </>
-                                )}
+                                className="px-14 py-5 bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-lg font-bold rounded-[2rem] hover:from-indigo-700 hover:to-violet-700 transition-all shadow-xl shadow-indigo-500/20 hover:shadow-indigo-500/40 hover:-translate-y-1 disabled:opacity-30 disabled:cursor-not-allowed group relative overflow-hidden">
+                                <span className="relative z-10 flex items-center gap-3">
+                                    {loading ? (
+                                        "Synchronizing..."
+                                    ) : (
+                                        <>
+                                            Tailor Resume Now
+                                            <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                            </svg>
+                                        </>
+                                    )}
+                                </span>
                             </button>
                         </div>
                     </div>

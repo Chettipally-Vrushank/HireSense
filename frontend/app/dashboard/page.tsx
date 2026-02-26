@@ -32,9 +32,9 @@ type Profile = {
 
 function Tag({ label, onRemove }: { label: string; onRemove: () => void }) {
     return (
-        <span className="inline-flex items-center gap-1 px-3 py-1 bg-indigo-50 text-indigo-700 text-xs font-bold rounded-lg border border-indigo-100">
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-500/10 text-indigo-300 text-[11px] font-black uppercase tracking-wider rounded-lg border border-indigo-500/20">
             {label}
-            <button onClick={onRemove} className="ml-0.5 text-indigo-400 hover:text-indigo-700 transition-colors">×</button>
+            <button onClick={onRemove} className="ml-1 text-indigo-500 hover:text-white transition-colors">×</button>
         </span>
     )
 }
@@ -52,14 +52,14 @@ function TagInput({ value = [], onChange, placeholder }: {
         <div className="space-y-2">
             <div className="flex gap-2">
                 <input
-                    className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50/50 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-50 outline-none text-sm text-gray-800 font-medium transition-all"
+                    className="flex-1 px-5 py-3 rounded-2xl border border-white/5 bg-white/5 focus:border-indigo-500/50 outline-none text-sm text-white font-medium transition-all"
                     placeholder={placeholder}
                     value={input}
                     onChange={e => setInput(e.target.value)}
                     onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); add() } }}
                 />
                 <button onClick={add} type="button"
-                    className="px-3 py-2.5 bg-indigo-50 text-indigo-600 font-bold rounded-xl hover:bg-indigo-100 transition-all text-sm">
+                    className="px-6 py-2 bg-white/5 text-white font-black rounded-2xl hover:bg-white/10 border border-white/5 transition-all text-sm">
                     + Add
                 </button>
             </div>
@@ -74,20 +74,23 @@ function TagInput({ value = [], onChange, placeholder }: {
 
 function Section({ title, icon, children }: { title: string; icon: string; children: React.ReactNode }) {
     return (
-        <div className="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-7 space-y-5">
-            <div className="flex items-center gap-3 mb-1">
-                <span className="text-xl">{icon}</span>
-                <h2 className="text-lg font-black text-gray-900">{title}</h2>
+        <div className="bg-white/5 backdrop-blur-md rounded-[2.5rem] border border-white/10 shadow-2xl p-8 space-y-6 relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent pointer-events-none" />
+            <div className="flex items-center gap-4 relative z-10">
+                <span className="w-10 h-10 bg-indigo-500/10 border border-indigo-500/20 rounded-xl flex items-center justify-center shadow-inner">{icon}</span>
+                <h2 className="text-xl font-black text-white uppercase tracking-tight">{title}</h2>
             </div>
-            {children}
+            <div className="relative z-10">
+                {children}
+            </div>
         </div>
     )
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
     return (
-        <div className="space-y-1.5">
-            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">{label}</label>
+        <div className="space-y-2.5">
+            <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] px-2">{label}</label>
             {children}
         </div>
     )
@@ -98,7 +101,7 @@ function Input({ value, onChange, placeholder, type = "text" }: {
 }) {
     return (
         <input type={type}
-            className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50/50 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-50 outline-none text-sm text-gray-800 font-medium transition-all"
+            className="w-full px-6 py-4 rounded-2xl border border-white/5 bg-white/5 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none text-sm text-white font-bold transition-all placeholder:text-white/10"
             placeholder={placeholder} value={value} onChange={e => onChange(e.target.value)} />
     )
 }
@@ -177,87 +180,78 @@ export default function DashboardPage() {
             <div className="max-w-5xl mx-auto space-y-8 animate-fade-in">
 
                 {/* Hero Header */}
-                <div className="relative bg-gradient-to-br from-indigo-600 via-indigo-700 to-violet-700 rounded-[2.5rem] p-8 text-white overflow-hidden shadow-2xl shadow-indigo-200">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4 blur-3xl" />
-                    <div className="absolute bottom-0 left-1/3 w-40 h-40 bg-violet-400/20 rounded-full translate-y-1/2 blur-2xl" />
-                    <div className="relative flex flex-col sm:flex-row items-start sm:items-center gap-6">
+                <div className="relative bg-gradient-to-br from-[#1a1530] to-[#0e0b1a] rounded-[3rem] p-10 text-white overflow-hidden shadow-2xl border border-white/5 group">
+                    <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-indigo-600/10 rounded-full -translate-y-1/2 translate-x-1/4 blur-[100px] border border-white/5" />
+                    <div className="absolute bottom-0 left-0 w-96 h-96 bg-violet-600/10 rounded-full translate-y-1/2 -translate-x-1/4 blur-[80px]" />
+
+                    <div className="relative flex flex-col lg:flex-row items-center gap-10">
                         {/* Avatar */}
-                        <div className="w-20 h-20 rounded-[1.5rem] bg-white/20 backdrop-blur flex items-center justify-center text-3xl font-black text-white border-2 border-white/30 flex-shrink-0">
+                        <div className="w-28 h-28 rounded-3xl bg-white/5 backdrop-blur-xl flex items-center justify-center text-4xl font-black text-white border border-white/20 shadow-2xl relative group-hover:scale-105 transition-transform">
+                            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 to-violet-500 opacity-20 rounded-3xl" />
                             {initials}
                         </div>
-                        <div className="flex-1">
-                            <p className="text-indigo-200 text-sm font-semibold mb-0.5">Welcome back</p>
-                            <h1 className="text-3xl font-black tracking-tight">
-                                {profile.full_name || user?.email?.split("@")[0] || "Hey there!"}
+
+                        <div className="flex-1 text-center lg:text-left">
+                            <span className="text-xs font-black uppercase tracking-[0.3em] text-indigo-400 mb-2 block">Command Center</span>
+                            <h1 className="text-4xl sm:text-5xl font-black tracking-tight mb-2">
+                                {profile.full_name || user?.email?.split("@")[0] || "HireSense User"}
                             </h1>
-                            {profile.current_role && (
-                                <p className="text-indigo-200 font-medium mt-1">{profile.current_role}</p>
-                            )}
-                            {profile.location && (
-                                <p className="text-indigo-300 text-sm mt-0.5 flex items-center gap-1">
-                                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                    </svg>
-                                    {profile.location}
-                                </p>
-                            )}
-                        </div>
-                        {/* Stats */}
-                        <div className="flex gap-4 flex-shrink-0">
-                            <div className="text-center bg-white/10 backdrop-blur rounded-2xl px-5 py-3">
-                                <p className="text-2xl font-black">{resumes.length}</p>
-                                <p className="text-indigo-200 text-xs font-semibold uppercase tracking-wider">Resumes</p>
+                            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4">
+                                {profile.current_role && (
+                                    <span className="px-4 py-1.5 bg-white/5 border border-white/10 rounded-full text-sm font-bold text-white/60">{profile.current_role}</span>
+                                )}
+                                {profile.location && (
+                                    <span className="flex items-center gap-2 text-white/40 text-sm font-medium">
+                                        <svg className="w-4 h-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                        </svg>
+                                        {profile.location}
+                                    </span>
+                                )}
                             </div>
-                            <div className="text-center bg-white/10 backdrop-blur rounded-2xl px-5 py-3">
-                                <p className="text-2xl font-black">{completion}%</p>
-                                <p className="text-indigo-200 text-xs font-semibold uppercase tracking-wider">Profile</p>
+                        </div>
+
+                        {/* Stats Widgets */}
+                        <div className="flex gap-4 w-full lg:w-auto">
+                            <div className="flex-1 lg:w-36 aspect-square bg-white/5 backdrop-blur-md rounded-[2rem] border border-white/10 p-6 flex flex-col items-center justify-center hover:bg-white/10 transition-all border-b-4 border-b-indigo-500/50 shadow-lg shadow-indigo-500/10">
+                                <span className="text-3xl font-black mb-1">{resumes.length}</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400 text-center">Library</span>
+                            </div>
+                            <div className="flex-1 lg:w-36 aspect-square bg-white/5 backdrop-blur-md rounded-[2rem] border border-white/10 p-6 flex flex-col items-center justify-center hover:bg-white/10 transition-all border-b-4 border-b-emerald-500/50 shadow-lg shadow-emerald-500/10">
+                                <span className="text-3xl font-black mb-1">{completion}%</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400 text-center">Profile</span>
                             </div>
                         </div>
                     </div>
 
-                    {/* Completion bar */}
-                    <div className="relative mt-6">
-                        <div className="flex justify-between text-xs text-indigo-200 font-semibold mb-2">
-                            <span>Profile completion</span>
-                            <span>{completion}%</span>
+                    <div className="mt-12 relative">
+                        <div className="h-1.5 bg-white/5 rounded-full overflow-hidden mb-3">
+                            <div className="h-full bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full transition-all duration-1000" style={{ width: `${completion}%` }} />
                         </div>
-                        <div className="h-2 bg-white/20 rounded-full overflow-hidden">
-                            <div className="h-full bg-white rounded-full transition-all duration-700"
-                                style={{ width: `${completion}%` }} />
+                        <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-white/30 px-1">
+                            <span>System Reliability: High</span>
+                            <span className="text-emerald-400">{completion}% Optimized</span>
                         </div>
-                        {completion < 100 && (
-                            <p className="text-indigo-200 text-xs mt-2">
-                                Complete your profile to get better AI-tailored resumes ✨
-                            </p>
-                        )}
                     </div>
 
-                    {/* Quick links */}
-                    <div className="relative flex gap-3 mt-6 flex-wrap">
-                        <Link href="/analyze"
-                            className="px-4 py-2 bg-white text-indigo-600 font-bold rounded-xl text-sm hover:bg-indigo-50 transition-all shadow-sm">
-                            Run Analysis
-                        </Link>
-                        <Link href="/tailor"
-                            className="px-4 py-2 bg-white/20 text-white font-bold rounded-xl text-sm hover:bg-white/30 transition-all backdrop-blur">
-                            Tailor Resume
-                        </Link>
-                        <Link href="/resumes"
-                            className="px-4 py-2 bg-white/20 text-white font-bold rounded-xl text-sm hover:bg-white/30 transition-all backdrop-blur">
-                            My Resumes
-                        </Link>
+                    {/* Quick Launch */}
+                    <div className="relative flex flex-wrap gap-4 mt-10">
+                        <Link href="/analyze" className="px-8 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-black rounded-2xl text-sm hover:from-indigo-700 hover:to-violet-700 transition-all shadow-xl shadow-indigo-500/20 hover:-translate-y-0.5">AI Analysis</Link>
+                        <Link href="/tailor" className="px-8 py-3 bg-white/5 text-white font-black rounded-2xl text-sm hover:bg-white/10 border border-white/10 transition-all hover:-translate-y-0.5">Tailor Resume</Link>
+                        <Link href="/resumes" className="px-8 py-3 bg-white/5 text-white font-black rounded-2xl text-sm hover:bg-white/10 border border-white/10 transition-all hover:-translate-y-0.5">My Resumes</Link>
+                        <Link href="/tailored" className="px-8 py-3 bg-white/5 text-white font-black rounded-2xl text-sm hover:bg-white/10 border border-white/10 transition-all hover:-translate-y-0.5">Tailored Resumes</Link>
                     </div>
                 </div>
 
                 {/* Tab Bar */}
-                <div className="flex gap-1 bg-gray-100 rounded-2xl p-1 w-fit">
+                <div className="flex gap-1 bg-white/5 border border-white/10 rounded-2xl p-1.5 w-fit backdrop-blur-md">
                     {(["profile", "career", "preferences"] as const).map(tab => (
                         <button key={tab} onClick={() => setActiveTab(tab)}
-                            className={`px-5 py-2 rounded-xl text-sm font-bold capitalize transition-all
+                            className={`px-8 py-2.5 rounded-xl text-sm font-black uppercase tracking-widest transition-all
                                 ${activeTab === tab
-                                    ? "bg-white text-indigo-600 shadow-sm"
-                                    : "text-gray-500 hover:text-gray-700"}`}>
-                            {tab === "profile" ? "👤 Personal" : tab === "career" ? "💼 Career" : "🎯 Preferences"}
+                                    ? "bg-white text-indigo-900 shadow-xl scale-105"
+                                    : "text-white/40 hover:text-white/70"}`}>
+                            {tab}
                         </button>
                     ))}
                 </div>
@@ -306,20 +300,20 @@ export default function DashboardPage() {
                             </Field>
                             <Field label="Years of Experience">
                                 <select
-                                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50/50 focus:border-indigo-400 outline-none text-sm text-gray-800 font-medium"
+                                    className="w-full px-6 py-4 rounded-2xl border border-white/5 bg-white/5 focus:border-indigo-500 outline-none text-sm text-white font-bold"
                                     value={profile.years_experience || ""}
                                     onChange={e => set("years_experience")(e.target.value)}>
-                                    <option value="">Select level</option>
-                                    {EXPERIENCE_LEVELS.map(l => <option key={l} value={l}>{l}</option>)}
+                                    <option value="" className="bg-[#0e0b1a]">Select level</option>
+                                    {EXPERIENCE_LEVELS.map(l => <option key={l} value={l} className="bg-[#0e0b1a]">{l}</option>)}
                                 </select>
                             </Field>
                             <Field label="Notice Period">
                                 <select
-                                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50/50 focus:border-indigo-400 outline-none text-sm text-gray-800 font-medium"
+                                    className="w-full px-6 py-4 rounded-2xl border border-white/5 bg-white/5 focus:border-indigo-500 outline-none text-sm text-white font-bold"
                                     value={profile.notice_period || ""}
                                     onChange={e => set("notice_period")(e.target.value)}>
-                                    <option value="">Select notice period</option>
-                                    {NOTICE_PERIODS.map(n => <option key={n} value={n}>{n}</option>)}
+                                    <option value="" className="bg-[#0e0b1a]">Select notice period</option>
+                                    {NOTICE_PERIODS.map(n => <option key={n} value={n} className="bg-[#0e0b1a]">{n}</option>)}
                                 </select>
                             </Field>
                             <Field label="Salary Expectation">
@@ -340,8 +334,8 @@ export default function DashboardPage() {
                             <Section title="Professional Summary" icon="📝">
                                 <Field label="Career Summary (used to enrich tailored resumes)">
                                     <textarea
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50/50 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-50 outline-none text-sm text-gray-800 font-medium resize-none transition-all"
-                                        rows={5}
+                                        className="w-full px-8 py-6 rounded-[2.5rem] border border-white/5 bg-white/5 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none text-sm text-white/90 font-medium resize-none transition-all leading-relaxed"
+                                        rows={6}
                                         placeholder="Write a 2–3 sentence professional summary that highlights your strengths, experience, and what you're looking for..."
                                         value={profile.career_summary || ""}
                                         onChange={e => set("career_summary")(e.target.value)}
@@ -371,10 +365,10 @@ export default function DashboardPage() {
                                 <div className="flex flex-wrap gap-2">
                                     {EMPLOYMENT_TYPES.map(type => (
                                         <button key={type} onClick={() => toggleEmploymentType(type)} type="button"
-                                            className={`px-4 py-2 rounded-xl text-sm font-bold transition-all border
+                                            className={`px-8 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all border
                                                 ${(profile.employment_type || []).includes(type)
-                                                    ? "bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-100"
-                                                    : "bg-gray-50 text-gray-600 border-gray-200 hover:border-indigo-300 hover:bg-indigo-50"}`}>
+                                                    ? "bg-indigo-600 text-white border-indigo-500 shadow-xl shadow-indigo-500/20 scale-105"
+                                                    : "bg-white/5 text-white/40 border-white/5 hover:border-white/20 hover:text-white"}`}>
                                             {type}
                                         </button>
                                     ))}
@@ -389,24 +383,28 @@ export default function DashboardPage() {
                         </Section>
 
                         {/* Profile completeness tips */}
-                        <div className="md:col-span-2 bg-gradient-to-br from-amber-50 to-orange-50 rounded-[2rem] border border-amber-100 p-7">
-                            <h3 className="font-black text-amber-900 mb-4 flex items-center gap-2">
-                                <span>💡</span> How your profile improves AI tailoring
+                        <div className="md:col-span-2 bg-gradient-to-br from-indigo-500/10 to-violet-500/10 rounded-[3rem] border border-white/10 p-10 relative overflow-hidden group">
+                            <div className="absolute inset-0 bg-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                            <h3 className="font-black text-white text-xl mb-6 flex items-center gap-3 relative z-10">
+                                <span className="w-10 h-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-xl shadow-inner">💡</span>
+                                AI Optimization Insights
                             </h3>
-                            <ul className="space-y-2.5 text-sm text-amber-800 font-medium">
+                            <ul className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
                                 {[
-                                    ["Career Summary", "Used directly in the tailored resume summary section", !!profile.career_summary],
-                                    ["Target Roles", "Helps AI align resume tone and keywords to your goals", !!(profile.target_roles?.length)],
-                                    ["Key Skills", "Ensures AI doesn't miss skills you consider important", !!(profile.key_skills?.length)],
-                                    ["Employment Type", "AI can add relevant keywords (e.g. 'remote-first' mindset)", !!(profile.employment_type?.length)],
-                                    ["Certifications", "AI surfaces certifications when relevant to the JD", !!(profile.certifications?.length)],
+                                    ["Professional Summary", "Used as the core template for your AI-generated executive summary.", !!profile.career_summary],
+                                    ["Target Role Definitions", "Aligns the semantic engine with specific industry terminology.", !!(profile.target_roles?.length)],
+                                    ["Skill Mapping", "Forces the AI to prioritize these specific keywords in matches.", !!(profile.key_skills?.length)],
+                                    ["Credential Verification", "Surfaces specific certifications that match JD requirements.", !!(profile.certifications?.length)],
                                 ].map(([field, tip, done]) => (
-                                    <li key={field as string} className="flex items-start gap-2.5">
-                                        <span className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-black mt-0.5
-                                            ${done ? "bg-green-500 text-white" : "bg-amber-200 text-amber-600"}`}>
+                                    <li key={field as string} className="flex items-start gap-4 p-5 bg-black/20 rounded-[1.5rem] border border-white/5 hover:border-white/10 transition-all">
+                                        <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black mt-1
+                                            ${done ? "bg-emerald-500 text-white shadow-[0_0_12px_rgba(16,185,129,0.4)]" : "bg-white/5 text-white/30 border border-white/10"}`}>
                                             {done ? "✓" : "○"}
-                                        </span>
-                                        <span><strong>{field as string}</strong> — {tip as string}</span>
+                                        </div>
+                                        <div>
+                                            <p className="font-black text-white/80 text-sm mb-1 uppercase tracking-tight">{field as string}</p>
+                                            <p className="text-xs text-white/40 leading-relaxed font-medium">{tip as string}</p>
+                                        </div>
                                     </li>
                                 ))}
                             </ul>
@@ -415,18 +413,18 @@ export default function DashboardPage() {
                 )}
 
                 {/* Save Button */}
-                <div className="flex justify-end pb-4">
+                <div className="flex justify-end pb-10">
                     <button onClick={handleSave} disabled={saving}
-                        className={`flex items-center gap-2 px-8 py-3.5 font-bold rounded-2xl transition-all shadow-lg text-sm
+                        className={`flex items-center gap-3 px-12 py-4 font-black rounded-[1.5rem] transition-all shadow-2xl uppercase tracking-[0.2em] text-[11px]
                             ${saved
-                                ? "bg-green-500 text-white shadow-green-200"
-                                : "bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-200 disabled:opacity-50"}`}>
+                                ? "bg-emerald-600 text-white shadow-emerald-500/20"
+                                : "bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-500/20 hover:-translate-y-1 active:scale-95 disabled:opacity-50"}`}>
                         {saving ? (
-                            <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Saving...</>
+                            <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Synchronizing...</>
                         ) : saved ? (
-                            <><span>✓</span> Profile Saved!</>
+                            <>✓ Vault Updated</>
                         ) : (
-                            <><span>💾</span> Save Profile</>
+                            <>Save System Profile</>
                         )}
                     </button>
                 </div>

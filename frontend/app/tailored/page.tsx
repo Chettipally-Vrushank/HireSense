@@ -115,38 +115,42 @@ export default function TailoredResumesPage() {
 
     return (
         <ProtectedLayout>
-            <div className="max-w-5xl mx-auto space-y-12">
-                <header className="flex justify-between items-end">
+            <div className="max-w-6xl mx-auto space-y-12 animate-fade-in pb-20">
+                <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                     <div>
-                        <h1 className="text-4xl font-black text-gray-900 mb-2">My Tailored Resumes</h1>
-                        <p className="text-gray-600 font-medium">Manage and export all your AI-optimized resumes.</p>
+                        <span className="text-xs font-bold uppercase tracking-widest text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-3 py-1 rounded-full mb-4 inline-block">Vault</span>
+                        <h1 className="text-4xl sm:text-5xl font-black text-white">My Tailored Resumes</h1>
+                        <p className="text-white/45 text-lg mt-2">Manage and export all your AI-optimized resumes.</p>
                     </div>
                     <Link
                         href="/tailor"
-                        className="px-6 py-3 bg-indigo-600 text-white font-bold rounded-2xl hover:bg-indigo-700 transition-all shadow-lg"
+                        className="px-8 py-4 bg-indigo-600 text-white font-black rounded-2xl hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-500/20 hover:-translate-y-1 active:scale-95 flex items-center gap-2 group"
                     >
-                        + New Tailored Resume
+                        <span className="text-xl group-hover:rotate-90 transition-transform">+</span>
+                        Create New
                     </Link>
                 </header>
 
                 {loading ? (
-                    <div className="flex justify-center py-24">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+                    <div className="flex flex-col items-center justify-center py-32 space-y-4">
+                        <div className="w-16 h-16 border-4 border-white/5 border-t-indigo-500 rounded-full animate-spin" />
+                        <p className="text-white/40 font-bold uppercase tracking-widest text-xs animate-pulse">Accessing Secure Storage...</p>
                     </div>
                 ) : resumes.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {resumes.map((resume) => (
-                            <div key={resume._id} className="bg-white rounded-[2rem] p-6 border border-gray-100 shadow-xl shadow-gray-200/50 hover:border-indigo-100 transition-all group">
-                                <div className="space-y-4">
+                            <div key={resume._id} className="bg-white/5 backdrop-blur-md rounded-[2.5rem] p-8 border border-white/10 shadow-2xl hover:border-indigo-500/30 transition-all group relative overflow-hidden">
+                                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent pointer-events-none" />
+                                <div className="relative z-10 space-y-6">
                                     <div className="flex justify-between items-start">
-                                        <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600">
-                                            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <div className="w-14 h-14 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl flex items-center justify-center text-indigo-400 shadow-inner">
+                                            <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                             </svg>
                                         </div>
                                         <button
                                             onClick={() => handleDelete(resume._id)}
-                                            className="p-2 text-gray-300 hover:text-red-500 transition-colors"
+                                            className="p-3 text-white/20 hover:text-red-400 bg-white/5 hover:bg-red-500/10 rounded-xl transition-all"
                                         >
                                             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -155,27 +159,28 @@ export default function TailoredResumesPage() {
                                     </div>
 
                                     <div>
-                                        <h3 className="text-xl font-bold text-gray-900 group-hover:text-indigo-600 transition-colors truncate">
+                                        <h3 className="text-xl font-black text-white group-hover:text-indigo-400 transition-colors truncate mb-1">
                                             {resume.resume_data?.name || "Untitled Resume"}
                                         </h3>
-                                        <p className="text-sm text-gray-500 font-medium">
-                                            Last updated: {new Date(resume.updated_at).toLocaleDateString()}
+                                        <p className="text-xs text-white/40 font-bold uppercase tracking-widest flex items-center gap-2">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
+                                            Updated {new Date(resume.updated_at).toLocaleDateString()}
                                         </p>
                                     </div>
 
-                                    <div className="flex gap-2 pt-2">
+                                    <div className="flex gap-3 pt-4">
                                         <button
                                             onClick={() => setEditingResume(resume)}
-                                            className="flex-1 py-2 bg-gray-50 text-gray-700 font-bold rounded-xl hover:bg-indigo-50 hover:text-indigo-600 transition-all text-sm"
+                                            className="flex-1 py-3 bg-white/5 text-white font-black rounded-2xl hover:bg-white/10 border border-white/5 hover:border-white/10 transition-all text-sm"
                                         >
                                             Edit
                                         </button>
                                         <button
                                             onClick={() => handleDownloadPDF(resume.resume_data)}
                                             disabled={pdfLoading}
-                                            className="flex-1 py-2 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all text-sm shadow-md shadow-indigo-100"
+                                            className="flex-1 py-3 bg-indigo-600 text-white font-black rounded-2xl hover:bg-indigo-700 transition-all text-sm shadow-xl shadow-indigo-500/20"
                                         >
-                                            PDF
+                                            {pdfLoading ? "..." : "PDF"}
                                         </button>
                                     </div>
                                 </div>
@@ -183,20 +188,23 @@ export default function TailoredResumesPage() {
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-24 bg-gray-50 rounded-[3rem] border-2 border-dashed border-gray-200">
-                        <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-6 text-gray-300 shadow-inner">
-                            <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
+                    <div className="text-center py-32 bg-white/5 rounded-[4rem] border-2 border-dashed border-white/10 relative overflow-hidden group">
+                        <div className="absolute inset-0 bg-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                        <div className="relative z-10">
+                            <div className="w-24 h-24 bg-white/5 border border-white/10 rounded-full flex items-center justify-center mx-auto mb-8 text-white/20 shadow-2xl">
+                                <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                            </div>
+                            <h3 className="text-3xl font-black text-white mb-3">Your vault is empty</h3>
+                            <p className="text-white/45 font-medium mb-10 max-w-sm mx-auto">Optimize your first resume and save it here for instant access whenever you need it.</p>
+                            <Link
+                                href="/tailor"
+                                className="inline-flex items-center gap-3 px-10 py-4 bg-indigo-600 text-white font-black rounded-2xl hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-500/20 active:scale-95"
+                            >
+                                Start Tailoring <span className="text-xl">→</span>
+                            </Link>
                         </div>
-                        <h3 className="text-2xl font-bold text-gray-900 mb-2">No tailored resumes yet</h3>
-                        <p className="text-gray-600 font-medium mb-8 max-w-sm mx-auto">Generate your first AI-optimized resume and save it here for easy access.</p>
-                        <Link
-                            href="/tailor"
-                            className="text-indigo-600 font-black text-lg hover:underline"
-                        >
-                            Get started now →
-                        </Link>
                     </div>
                 )}
             </div>
