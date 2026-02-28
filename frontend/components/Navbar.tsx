@@ -43,6 +43,7 @@ export default function Navbar() {
         { href: "/tailor", label: "Tailor Resume" },
         { href: "/resumes", label: "My Resumes" },
         { href: "/tailored", label: "Tailored" },
+        { href: "/portfolio", label: "My Portfolio" },
     ]
 
     return (

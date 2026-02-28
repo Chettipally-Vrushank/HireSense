@@ -133,6 +133,7 @@ export default function Home() {
     { label: "Tailor Resume", href: "/tailor" },
     { label: "My Resumes", href: "/resumes" },
     { label: "Tailored", href: "/tailored" },
+    { label: "My Portfolio", href: "/portfolio" },
   ]
 
   const howReveal = useScrollReveal()

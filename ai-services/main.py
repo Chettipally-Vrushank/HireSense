@@ -21,7 +21,6 @@ from database.tailored_resume_repository import (
 from services.resume_tailor_service import generate_tailored_resume
 from pydantic import BaseModel
 from typing import Optional, List
-
 try:
     from services.pdf_generator_service import generate_pdf_from_resume
 except (ImportError, OSError) as e:
@@ -39,6 +38,9 @@ async def shutdown_db_client():
     await close_mongo_connection()
 
 app.include_router(auth_router)
+
+from portfolio_routes import portfolio_router
+app.include_router(portfolio_router)
 
 app.add_middleware(
     CORSMiddleware,
