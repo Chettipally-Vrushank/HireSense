@@ -139,10 +139,11 @@ export default function Home() {
   const howReveal = useScrollReveal()
   const statsReveal = useScrollReveal({ threshold: 0.3 })
   const featReveal = useScrollReveal()
+  const ctaReveal = useScrollReveal({ threshold: 0.2 })
 
   const c1 = useCounter(94, 1800, statsReveal.visible)
-  const c2 = useCounter(12000, 2000, statsReveal.visible)
-  const c3 = useCounter(3, 1000, statsReveal.visible)
+  const c2 = useCounter(120, 2000, statsReveal.visible)
+  const c3 = useCounter(10, 1000, statsReveal.visible)
 
   const logoEl = (
     <div className="flex items-center gap-2">
@@ -324,7 +325,7 @@ export default function Home() {
       </section>
 
       {/* ── FEATURES ── */}
-      <section id="features" className="py-20 px-4 sm:px-6 lg:px-8 pointer-events-none">
+      <section id="features" className="py-10 px-4 sm:px-6 lg:px-8 pointer-events-none">
         <div ref={featReveal.ref} className="max-w-5xl mx-auto pointer-events-auto">
           <div className={`text-center mb-14 transition-all duration-700 ${featReveal.visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
             <span className="text-xs font-bold uppercase tracking-widest text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-3 py-1 rounded-full">Features</span>
@@ -350,9 +351,25 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── SKILL MARQUEE ── */}
+      <div className="overflow-hidden border-t border-b border-white/5 py-5 pointer-events-none">
+        <div className="marquee-track">
+          {[
+            "Python", "TensorFlow", "FastAPI", "React", "Node.js", "Docker", "Kubernetes", "AWS", "MongoDB",
+            "TypeScript", "CI/CD", "GraphQL", "Redis", "PostgreSQL", "Machine Learning", "REST APIs",
+            "Python", "TensorFlow", "FastAPI", "React", "Node.js", "Docker", "Kubernetes", "AWS", "MongoDB",
+            "TypeScript", "CI/CD", "GraphQL", "Redis", "PostgreSQL", "Machine Learning", "REST APIs",
+          ].map((s, i) => (
+            <span key={i} className="px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.3)" }}>{s}</span>
+          ))}
+        </div>
+      </div>
+
+
+
       {/* ── CTA ── */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 pointer-events-none">
-        <div className="max-w-3xl mx-auto pointer-events-auto">
+      <section className="py-10 px-4 sm:px-6 lg:px-8 pointer-events-none">
+        <div ref={ctaReveal.ref} className={`max-w-3xl mx-auto pointer-events-auto transition-all duration-1000 ${ctaReveal.visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
           <div className="relative bg-gradient-to-br from-indigo-600/90 via-indigo-700/90 to-violet-700/90 rounded-[2.5rem] p-12 overflow-hidden border border-indigo-500/30 shadow-2xl shadow-indigo-500/20 text-center">
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4 blur-3xl" />
             <div className="absolute bottom-0 left-1/3 w-40 h-40 bg-violet-400/10 rounded-full translate-y-1/2 blur-2xl" />
@@ -364,20 +381,46 @@ export default function Home() {
                 <Link href="/signup" className="px-8 py-3.5 bg-white text-indigo-700 font-black rounded-2xl hover:bg-indigo-50 transition-all shadow-lg hover:-translate-y-0.5 text-sm">Analyze My Resume Now →</Link>
                 <Link href="/login" className="px-8 py-3.5 bg-white/10 text-white font-semibold rounded-2xl hover:bg-white/20 transition-all backdrop-blur text-sm border border-white/20">I have an account</Link>
               </div>
+              <div className="flex items-center justify-center gap-8 mt-8 flex-wrap">
+                {["No credit card", "Instant results", "Google OAuth", "Data private"].map((tr, i) => (
+                  <div key={i} className="flex items-center gap-1.5 text-xs text-indigo-200/60">
+                    <svg className="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
+                    {tr}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* ── FOOTER ── */}
-      <footer className="py-10 border-t border-white/5 pointer-events-none relative z-10 bg-[#0e0b1a]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6 pointer-events-auto">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-lg flex items-center justify-center"><span className="text-white font-black text-sm">H</span></div>
-            <span className="font-black text-white">Hire<span className="text-indigo-400">Sense</span></span>
+      <footer className="border-t border-white/5 pointer-events-none relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 grid grid-cols-1 md:grid-cols-4 gap-10 pointer-events-auto">
+          <div className="md:col-span-2">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-lg flex items-center justify-center"><span className="text-white font-black text-sm">H</span></div>
+              <span className="font-black text-white">Hire<span className="text-indigo-400">Sense</span></span>
+            </div>
+            <p className="text-white/30 text-sm leading-relaxed max-w-xs">AI-powered resume intelligence. Match scores, skill gap analysis, and ATS optimization — in seconds.</p>
+            <p className="text-white/15 text-xs mt-6">© 2025 HireSense AI. All rights reserved.</p>
           </div>
-          <p className="text-white/25 text-sm">© 2025 HireSense AI. All rights reserved.</p>
-          <div className="flex items-center gap-6">{["Privacy", "Terms", "Contact"].map(l => (<Link key={l} href="#" className="text-white/25 hover:text-white/60 transition-colors text-sm font-medium">{l}</Link>))}</div>
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-widest text-white/30 mb-4">Product</p>
+            <div className="space-y-3">
+              {[["Analyze Resume", "/analyze"], ["Tailor Resume", "/tailor"], ["My Resumes", "/resumes"], ["My Portfolio", "/portfolio"]].map(([l, h]) => (
+                <Link key={h} href={h} className="block text-sm text-white/30 hover:text-white/70 transition-colors">{l}</Link>
+              ))}
+            </div>
+          </div>
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-widest text-white/30 mb-4">Account</p>
+            <div className="space-y-3">
+              {[["Login", "/login"], ["Sign Up", "/signup"], ["Privacy", "#"], ["Terms", "#"]].map(([l, h]) => (
+                <Link key={l} href={h} className="block text-sm text-white/30 hover:text-white/70 transition-colors">{l}</Link>
+              ))}
+            </div>
+          </div>
         </div>
       </footer>
     </div>

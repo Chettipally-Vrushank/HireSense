@@ -50,19 +50,19 @@ export default function Navbar() {
         <>
             <nav className={`fixed top-0 w-full z-50 transition-all duration-300
                 ${scrolled
-                    ? "bg-white/95 backdrop-blur-xl shadow-sm shadow-gray-200/80 border-b border-gray-100"
-                    : "bg-white/70 backdrop-blur-md border-b border-transparent"}`}>
+                    ? "bg-[#080808]/95 backdrop-blur-xl border-b border-white/8"
+                    : "bg-[#080808]/70 backdrop-blur-md border-b border-transparent"}`}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-[62px] items-center">
 
                         {/* Logo */}
                         <Link href="/" className="flex items-center gap-2.5 group flex-shrink-0">
-                            <div className="relative w-9 h-9 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-xl flex items-center justify-center shadow-md shadow-indigo-200 group-hover:shadow-indigo-300 transition-shadow">
+                            <div className="relative w-9 h-9 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/30 group-hover:shadow-indigo-500/50 transition-shadow">
                                 <span className="text-white font-black text-lg leading-none">H</span>
-                                <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-white" />
+                                <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-[#080808]" />
                             </div>
-                            <span className="text-[17px] font-black tracking-tight text-gray-900">
-                                Hire<span className="text-indigo-600">Sense</span>
+                            <span className="text-[17px] font-black tracking-tight text-white">
+                                Hire<span className="text-indigo-400">Sense</span>
                             </span>
                         </Link>
 
@@ -72,11 +72,11 @@ export default function Navbar() {
                                 <Link key={href} href={href}
                                     className={`relative px-4 py-2 text-sm font-semibold rounded-xl transition-all duration-200
                                         ${isActive(href)
-                                            ? "text-indigo-600 bg-indigo-50"
-                                            : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"}`}>
+                                            ? "text-indigo-400 bg-indigo-500/10"
+                                            : "text-white/50 hover:text-white/90 hover:bg-white/5"}`}>
                                     {label}
                                     {isActive(href) && (
-                                        <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-indigo-500" />
+                                        <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-indigo-400" />
                                     )}
                                 </Link>
                             ))}
@@ -89,8 +89,8 @@ export default function Navbar() {
                                     <Link href="/dashboard"
                                         className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl transition-all
                                             ${isActive("/dashboard")
-                                                ? "text-indigo-600 bg-indigo-50"
-                                                : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"}`}>
+                                                ? "text-indigo-400 bg-indigo-500/10"
+                                                : "text-white/60 hover:text-white/90 hover:bg-white/5"}`}>
                                         <span className="w-6 h-6 rounded-lg bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center text-white text-xs font-black flex-shrink-0">
                                             {userName ? userName[0].toUpperCase() : "U"}
                                         </span>
@@ -99,18 +99,18 @@ export default function Navbar() {
                                         </span>
                                     </Link>
                                     <button onClick={logout}
-                                        className="px-4 py-2 text-sm font-semibold text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all">
+                                        className="px-4 py-2 text-sm font-semibold text-white/35 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-all">
                                         Logout
                                     </button>
                                 </>
                             ) : (
                                 <>
                                     <Link href="/login"
-                                        className="px-4 py-2 text-sm font-semibold text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-xl transition-all">
+                                        className="px-4 py-2 text-sm font-semibold text-white/50 hover:text-white/90 rounded-xl transition-all">
                                         Sign In
                                     </Link>
                                     <Link href="/signup"
-                                        className="px-5 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-indigo-600 to-violet-600 rounded-xl hover:from-indigo-700 hover:to-violet-700 transition-all shadow-md shadow-indigo-200 hover:shadow-indigo-300 hover:-translate-y-px">
+                                        className="px-5 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-indigo-500 to-violet-600 rounded-xl hover:from-indigo-600 hover:to-violet-700 transition-all shadow-lg shadow-indigo-500/25 hover:-translate-y-px">
                                         Get Started Free
                                     </Link>
                                 </>
@@ -120,51 +120,51 @@ export default function Navbar() {
                         {/* Mobile hamburger */}
                         <button
                             onClick={() => setMobileOpen(v => !v)}
-                            className="md:hidden flex flex-col gap-1.5 p-2 rounded-xl hover:bg-gray-100 transition-all"
+                            className="md:hidden flex flex-col gap-1.5 p-2 rounded-xl hover:bg-white/5 transition-all"
                             aria-label="Toggle menu">
-                            <span className={`block w-5 h-0.5 bg-gray-700 rounded transition-all duration-300 ${mobileOpen ? "rotate-45 translate-y-2" : ""}`} />
-                            <span className={`block w-5 h-0.5 bg-gray-700 rounded transition-all duration-300 ${mobileOpen ? "opacity-0" : ""}`} />
-                            <span className={`block w-5 h-0.5 bg-gray-700 rounded transition-all duration-300 ${mobileOpen ? "-rotate-45 -translate-y-2" : ""}`} />
+                            <span className={`block w-5 h-0.5 bg-white/60 rounded transition-all duration-300 ${mobileOpen ? "rotate-45 translate-y-2" : ""}`} />
+                            <span className={`block w-5 h-0.5 bg-white/60 rounded transition-all duration-300 ${mobileOpen ? "opacity-0" : ""}`} />
+                            <span className={`block w-5 h-0.5 bg-white/60 rounded transition-all duration-300 ${mobileOpen ? "-rotate-45 -translate-y-2" : ""}`} />
                         </button>
                     </div>
                 </div>
 
                 {/* Mobile menu */}
                 <div className={`md:hidden transition-all duration-300 overflow-hidden ${mobileOpen ? "max-h-[480px] opacity-100" : "max-h-0 opacity-0"}`}>
-                    <div className="px-4 pb-5 pt-2 space-y-1 bg-white/95 backdrop-blur-xl border-t border-gray-100">
+                    <div className="px-4 pb-5 pt-2 space-y-1 bg-[#080808]/98 backdrop-blur-xl border-t border-white/8">
                         {navLinks.map(({ href, label }) => (
                             <Link key={href} href={href}
                                 className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all
                                     ${isActive(href)
-                                        ? "text-indigo-600 bg-indigo-50"
-                                        : "text-gray-700 hover:bg-gray-50"}`}>
+                                        ? "text-indigo-400 bg-indigo-500/10"
+                                        : "text-white/60 hover:text-white/90 hover:bg-white/5"}`}>
                                 {label}
-                                {isActive(href) && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-indigo-500" />}
+                                {isActive(href) && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-indigo-400" />}
                             </Link>
                         ))}
-                        <div className="pt-2 border-t border-gray-100 space-y-1">
+                        <div className="pt-2 border-t border-white/8 space-y-1">
                             {isLoggedIn ? (
                                 <>
                                     <Link href="/dashboard"
-                                        className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-all">
+                                        className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-white/60 hover:text-white/90 hover:bg-white/5 transition-all">
                                         <span className="w-6 h-6 rounded-lg bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center text-white text-xs font-black flex-shrink-0">
                                             {userName ? userName[0].toUpperCase() : "U"}
                                         </span>
                                         <span className="truncate">{userName || "Dashboard"}</span>
                                     </Link>
                                     <button onClick={logout}
-                                        className="w-full text-left px-4 py-3 rounded-xl text-sm font-semibold text-red-500 hover:bg-red-50 transition-all">
+                                        className="w-full text-left px-4 py-3 rounded-xl text-sm font-semibold text-white/35 hover:text-red-400 hover:bg-red-500/10 transition-all">
                                         Logout
                                     </button>
                                 </>
                             ) : (
                                 <>
                                     <Link href="/login"
-                                        className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-all">
+                                        className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-white/60 hover:text-white/90 hover:bg-white/5 transition-all">
                                         Sign In
                                     </Link>
                                     <Link href="/signup"
-                                        className="flex items-center justify-center px-4 py-3 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-indigo-600 to-violet-600">
+                                        className="flex items-center justify-center px-4 py-3 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-indigo-500 to-violet-600">
                                         Get Started Free →
                                     </Link>
                                 </>

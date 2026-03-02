@@ -44,10 +44,10 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
 
     const logoEl = (
         <div className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-white rounded-lg flex items-center justify-center shadow-sm">
-                <span className="text-indigo-700 font-black text-sm leading-none">H</span>
+            <div className="w-7 h-7 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                <span className="text-white font-black text-sm leading-none">H</span>
             </div>
-            <span className="text-white font-black text-[15px] tracking-tight">Hire<span className="text-indigo-300">Sense</span></span>
+            <span className="text-white font-black text-[15px] tracking-tight">Hire<span className="text-indigo-400">Sense</span></span>
         </div>
     )
 
