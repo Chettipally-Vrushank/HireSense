@@ -1,0 +1,14 @@
+__pycache__
+*.pyc
+*.pyo
+.env
+venv
+.git
+.gitignore
+*.egg-info
+.pytest_cache
+generated_pdfs
+recommendation_cache.json
+check_pinecone.py
+test_api.py
+verify_*.py

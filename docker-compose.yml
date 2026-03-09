@@ -1,0 +1,94 @@
+version: "3.9"
+
+services:
+  # ──────────────────────────────────────────────
+  # AI Services (FastAPI / Python)
+  # ──────────────────────────────────────────────
+  ai-services:
+    build:
+      context: ./ai-services
+      dockerfile: Dockerfile
+    container_name: hiresense-ai
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGO_URI=${MONGO_URI}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_ALGORITHM=${JWT_ALGORITHM:-HS256}
+      - JWT_EXPIRE_MINUTES=${JWT_EXPIRE_MINUTES:-60}
+      - PINECONE_API_KEY=${PINECONE_API_KEY}
+      - GOOGLE_PROJECT_ID=${GOOGLE_PROJECT_ID}
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/hiresense-487704-5ce7b1e10386.json
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+    volumes:
+      - ai_pdfs:/app/generated_pdfs
+    networks:
+      - hiresense-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
+  # ──────────────────────────────────────────────
+  # Backend (Node.js / Express)
+  # ──────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: hiresense-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGO_URI=${MONGO_URI}
+      - NODE_ENV=production
+    networks:
+      - hiresense-net
+    depends_on:
+      ai-services:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:5000/health", "||", "exit", "1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  # ──────────────────────────────────────────────
+  # Frontend (Next.js)
+  # ──────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=http://ai-services:8000
+    container_name: hiresense-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://ai-services:8000
+    networks:
+      - hiresense-net
+    depends_on:
+      ai-services:
+        condition: service_healthy
+
+# ──────────────────────────────────────────────
+# Shared volumes
+# ──────────────────────────────────────────────
+volumes:
+  ai_pdfs:
+
+# ──────────────────────────────────────────────
+# Internal network
+# ──────────────────────────────────────────────
+networks:
+  hiresense-net:
+    driver: bridge
