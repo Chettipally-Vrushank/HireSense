@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   # ──────────────────────────────────────────────
-  # AI Services (FastAPI / Python)
+  # AI Services (FastAPI / Python) — main backend
   # ──────────────────────────────────────────────
   ai-services:
     build:
@@ -27,37 +27,11 @@ services:
     networks:
       - hiresense-net
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/docs" ]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 40s
-
-  # ──────────────────────────────────────────────
-  # Backend (Node.js / Express)
-  # ──────────────────────────────────────────────
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: hiresense-backend
-    restart: unless-stopped
-    ports:
-      - "5000:5000"
-    environment:
-      - MONGO_URI=${MONGO_URI}
-      - NODE_ENV=production
-    networks:
-      - hiresense-net
-    depends_on:
-      ai-services:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:5000/health", "||", "exit", "1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 20s
 
   # ──────────────────────────────────────────────
   # Frontend (Next.js)
@@ -86,9 +60,9 @@ services:
 volumes:
   ai_pdfs:
 
-# ──────────────────────────────────────────────
-# Internal network
-# ──────────────────────────────────────────────
+    # ──────────────────────────────────────────────
+    # Internal network
+    # ──────────────────────────────────────────────
 networks:
   hiresense-net:
     driver: bridge
