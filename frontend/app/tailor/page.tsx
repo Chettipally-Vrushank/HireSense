@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import { api } from "@/lib/api"
 import ProtectedLayout from "@/components/ProtectedLayout"
@@ -266,6 +266,14 @@ function ResumeEditor({ data, onChange }: { data: ResumeData; onChange: (d: Resu
 // MAIN TAILOR PAGE
 // ─────────────────────────────────────────────
 export default function TailorPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-white">Loading...</div>}>
+            <TailorContent />
+        </Suspense>
+    )
+}
+
+function TailorContent() {
     const searchParams = useSearchParams()
     const [file, setFile] = useState<File | null>(null)
     const [selectedResumeId, setSelectedResumeId] = useState<string | null>(null)
