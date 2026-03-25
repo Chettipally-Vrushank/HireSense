@@ -30,6 +30,7 @@ async def generate_tailored_resume(original_resume_text: str, job_description: s
       "phone": "Phone Number",
       "summary": "Tailored professional summary focusing on JD requirements",
       "skills": ["Skill 1", "Skill 2"],
+      "template": "classic",
       "experience": [
         {{
           "company": "Company Name",
@@ -74,6 +75,9 @@ async def generate_tailored_resume(original_resume_text: str, job_description: s
                 cleaned_response = cleaned_response[:-3]
             
             tailored_data = json.loads(cleaned_response.strip())
+            # Ensure template is set (default to classic)
+            if "template" not in tailored_data:
+                tailored_data["template"] = "classic"
             return tailored_data
         except json.JSONDecodeError as e:
             logger.error(f"Failed to parse Gemini response as JSON: {e}")

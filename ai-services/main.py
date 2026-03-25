@@ -135,6 +135,14 @@ def gap_analysis(data: GapRequest):
 async def get_resumes_api(user_id: str = Depends(get_current_user_id)):
     return await list_resumes(user_id)
 
+@app.get("/ai/resumes/{id}")
+async def get_single_resume_api(id: str, user_id: str = Depends(get_current_user_id)):
+    from database.resume_repository import get_resume_by_id
+    resume = await get_resume_by_id(id, user_id)
+    if not resume:
+        raise HTTPException(status_code=404, detail="Resume not found")
+    return resume
+
 # 🔹 AI Tailored Resume Endpoints
 
 class TailorResumeRequest(BaseModel):

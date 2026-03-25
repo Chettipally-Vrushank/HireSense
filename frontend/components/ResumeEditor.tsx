@@ -68,6 +68,26 @@ export default function ResumeEditor({
             </div>
 
             <div className="space-y-10">
+                {/* Template Selection */}
+                <div className="space-y-3">
+                    <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] px-2">Resume Theme</label>
+                    <div className="grid grid-cols-3 gap-4">
+                        {["classic", "modern", "minimal"].map((theme) => (
+                            <button
+                                key={theme}
+                                onClick={() => handleChange("template", theme)}
+                                className={`px-6 py-4 rounded-2xl font-bold uppercase text-xs tracking-wider transition-all ${
+                                    editedData.template === theme
+                                        ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/50 border border-indigo-400"
+                                        : "bg-white/5 text-white/70 border border-white/10 hover:border-white/30 hover:bg-white/10"
+                                }`}
+                            >
+                                {theme}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
                 {/* Header Info */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <InputField label="Full Name" value={editedData.name} onChange={(v) => handleChange("name", v)} />

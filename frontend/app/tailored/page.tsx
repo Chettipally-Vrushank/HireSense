@@ -22,7 +22,16 @@ export default function TailoredResumesPage() {
         try {
             const res = await api.get("/ai/tailored-resumes")
             if (res.ok) {
-                setResumes(await res.json())
+                const data = await res.json()
+                // Ensure each resume has a template field
+                const resumes = data.map((r: any) => ({
+                    ...r,
+                    resume_data: {
+                        template: "classic",
+                        ...r.resume_data
+                    }
+                }))
+                setResumes(resumes)
             }
         } catch (err) {
             console.error("Failed to fetch tailored resumes:", err)

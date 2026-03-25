@@ -1,8 +1,11 @@
 import os
+import time
+import random
 from dotenv import load_dotenv
 import vertexai
 from vertexai.generative_models import GenerativeModel
 from vertexai.language_models import TextEmbeddingModel
+from google.api_core.exceptions import ResourceExhausted, ServiceUnavailable, InternalServerError
 
 load_dotenv()
 
@@ -11,9 +14,37 @@ LOCATION = "us-central1"
 
 vertexai.init(project=PROJECT_ID, location=LOCATION)
 
+# Cache the available model
+_available_model = "gemini-2.5-flash"
+
+def get_available_model():
+    """Get the first available Gemini model from the list of options."""
+    global _available_model
+    if _available_model:
+        return _available_model
+    
+    model_options = ["gemini-2.5-flash"]
+    
+    for model_name in model_options:
+        try:
+            print(f"Testing model availability: {model_name}...")
+            # Initialize to check if model is accessible
+            test_model = GenerativeModel(model_name)
+            _available_model = model_name
+            print(f"✓ Model '{model_name}' is available and will be used.")
+            return model_name
+        except Exception as e:
+            print(f"✗ Model '{model_name}' not available: {str(e)[:100]}")
+            continue
+    
+    # Fallback to gemini-2.5-flash if all else fails
+    _available_model = "gemini-2.5-flash"
+    print(f"⚠️  Using fallback model: {_available_model}")
+    return _available_model
+
 def call_gemini(prompt, is_json=False):
-    model_name = "gemini-2.5-flash" 
-    print(f"Calling Gemini ({model_name})...")
+    model_name = get_available_model()
+    print(f"Calling Gemini with model: {model_name}")
     model = GenerativeModel(model_name)
     
     config = {
@@ -29,15 +60,32 @@ def call_gemini(prompt, is_json=False):
         # We'll keep it but reinforce in the prompt.
         config["response_mime_type"] = "application/json"
         
-    response = model.generate_content(
-        prompt,
-        generation_config=config
-    )
-    
-    if not response.text:
-        raise ValueError("Gemini returned an empty response")
-        
-    return response.text
+    max_retries = 5
+    base_delay = 2
+
+    for attempt in range(max_retries):
+        try:
+            response = model.generate_content(
+                prompt,
+                generation_config=config
+            )
+            
+            if not response.text:
+                raise ValueError("Gemini returned an empty response")
+                
+            return response.text
+
+        except (ResourceExhausted, ServiceUnavailable, InternalServerError) as e:
+            if attempt == max_retries - 1:
+                print(f"Error calling Gemini after {max_retries} attempts: {e}")
+                raise e
+            
+            wait_time = (base_delay * (2 ** attempt)) + random.uniform(0, 1)
+            print(f"Gemini API error ({type(e).__name__}). Retrying in {wait_time:.2f}s... (Attempt {attempt + 1}/{max_retries})")
+            time.sleep(wait_time)
+        except Exception as e:
+            print(f"Unexpected error calling Gemini: {e}")
+            raise e
 
 def get_embedding(text):
     if isinstance(text, list):

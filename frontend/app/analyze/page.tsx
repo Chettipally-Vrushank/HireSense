@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { api } from "@/lib/api"
 import ProtectedLayout from "@/components/ProtectedLayout"
 import { ResumeUpload, MatchResult } from "@/components/AnalysisUI"
@@ -12,26 +12,55 @@ export default function AnalyzePage() {
     const [result, setResult] = useState<any>(null)
     const [recLoading, setRecLoading] = useState(false)
     const [recommendations, setRecommendations] = useState<any>(null)
+    const [existingResumeText, setExistingResumeText] = useState("")
+    const [existingResumeName, setExistingResumeName] = useState("")
+
+    useEffect(() => {
+        const fetchResume = async () => {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get("id");
+            if (id) {
+                try {
+                    const res = await api.get(`/ai/resumes/${id}`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.original_text) {
+                            setExistingResumeText(data.original_text);
+                            setExistingResumeName(data.parsed_data?.name || "Selected Resume");
+                        }
+                    }
+                } catch (err) {
+                    console.error("Failed to load existing resume", err);
+                }
+            }
+        };
+        fetchResume();
+    }, []);
 
     const handleAnalyze = async () => {
-        if (!file || !jdText) return
+        if ((!file && !existingResumeText) || !jdText) return
         setLoading(true)
         setResult(null)
         setRecommendations(null)
 
         try {
-            const formData = new FormData()
-            formData.append("file", file)
-            const parseRes = await api.upload("/ai/parse-resume-pdf", formData)
-            if (!parseRes.ok) {
-                const errorData = await parseRes.json();
-                throw new Error(errorData.detail || "Failed to parse resume");
+            let resumeText = existingResumeText;
+            
+            if (file) {
+                const formData = new FormData()
+                formData.append("file", file)
+                const parseRes = await api.upload("/ai/parse-resume-pdf", formData)
+                if (!parseRes.ok) {
+                    const errorData = await parseRes.json();
+                    throw new Error(errorData.detail || "Failed to parse resume");
+                }
+                const resumeData = await parseRes.json()
+                resumeText = resumeData.original_text;
             }
-            const resumeData = await parseRes.json()
 
             const matchRes = await api.post("/ai/match", {
                 jd_text: jdText,
-                resume_text: resumeData.original_text
+                resume_text: resumeText
             })
             if (!matchRes.ok) {
                 const errorData = await matchRes.json();
@@ -78,9 +107,26 @@ export default function AnalyzePage() {
                             <span className="w-9 h-9 bg-white/5 border border-white/10 text-indigo-400 rounded-xl flex items-center justify-center text-sm font-black">1</span>
                             Your Resume
                         </h2>
-                        <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-[2.5rem] p-1 overflow-hidden shadow-2xl">
-                            <ResumeUpload onFileSelect={setFile} />
-                        </div>
+                        {existingResumeText && !file ? (
+                            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-[2.5rem] p-6 shadow-2xl flex flex-col items-center justify-center h-full min-h-[220px]">
+                                <span className="text-4xl mb-4">📄</span>
+                                <h3 className="text-xl font-bold text-white mb-2 truncate max-w-full px-4">{existingResumeName}</h3>
+                                <p className="text-white/40 mb-4 text-center">Using resume from your vault.</p>
+                                <button
+                                    onClick={() => {
+                                        setExistingResumeText("");
+                                        setExistingResumeName("");
+                                    }}
+                                    className="text-xs font-bold text-indigo-400 hover:text-white transition-colors border border-indigo-400/20 px-3 py-1.5 rounded-lg"
+                                >
+                                    Upload a different file instead
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-[2.5rem] p-1 overflow-hidden shadow-2xl">
+                                <ResumeUpload onFileSelect={setFile} />
+                            </div>
+                        )}
                     </div>
 
                     <div className="space-y-6">
@@ -102,7 +148,7 @@ export default function AnalyzePage() {
                 <div className="flex justify-center pt-4">
                     <button
                         onClick={handleAnalyze}
-                        disabled={loading || !file || !jdText}
+                        disabled={loading || (!file && !existingResumeText) || !jdText}
                         className="px-14 py-5 bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-lg font-bold rounded-[2rem] hover:from-indigo-700 hover:to-violet-700 transition-all shadow-xl shadow-indigo-500/20 hover:shadow-indigo-500/40 hover:-translate-y-1 disabled:opacity-30 disabled:cursor-not-allowed group relative overflow-hidden"
                     >
                         <span className="relative z-10 flex items-center gap-3">
