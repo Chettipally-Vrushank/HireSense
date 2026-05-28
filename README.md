@@ -126,7 +126,7 @@ MongoDB + Pinecone
 ## 🏛️ System Architecture Diagram
 
 <p align="center">
-  <img src="./docs/system-architecture.png" width="850"/>
+  <img src="./docs/system-architecture.png" width="500" height="300"/>
 </p>
 
 ---
@@ -134,7 +134,7 @@ MongoDB + Pinecone
 ## 🧩 Class Diagram
 
 <p align="center">
-  <img src="./docs/class-diagram.png" width="750"/>
+  <img src="./docs/class-diagram.png" width="500" height="300"/>
 </p>
 
 ### Core Entities
@@ -151,7 +151,7 @@ MongoDB + Pinecone
 ## 🔄 Activity Diagram
 
 <p align="center">
-  <img src="./docs/activity-diagram.png" width="750"/>
+  <img src="./docs/activity-diagram.png" width="500" height="300"/>
 </p>
 
 ### Workflow
@@ -170,7 +170,7 @@ MongoDB + Pinecone
 ## 👤 Use Case Diagram
 
 <p align="center">
-  <img src="./docs/usecase-diagram.png" width="750"/>
+  <img src="./docs/usecase-diagram.png" width="500" height="300"/>
 </p>
 
 ### Actors
@@ -184,7 +184,7 @@ MongoDB + Pinecone
 ## 🔁 Sequence Diagram
 
 <p align="center">
-  <img src="./docs/sequence-diagram.png" width="850"/>
+  <img src="./docs/sequence-diagram.png" width="500" height="300"/>
 </p>
 
 ### Flow
@@ -502,7 +502,7 @@ Associate Professor, Department of CSE
 ## 📄 Resume Parsing Output
 
 <p align="center">
-  <img src="./docs/output-resume-analysis.png" width="800"/>
+  <img src="./docs/output-resume-analysis.png" width="500" height="300"/>
 </p>
 
 ---
@@ -510,7 +510,7 @@ Associate Professor, Department of CSE
 ## 📊 Match Analysis Output
 
 <p align="center">
-  <img src="./docs/output-match-analysis.png" width="800"/>
+  <img src="./docs/output-match-analysis.png" width="500" height="300"/>
 </p>
 
 ---
@@ -518,7 +518,7 @@ Associate Professor, Department of CSE
 ## 🛣️ Skill Roadmap Output
 
 <p align="center">
-  <img src="./docs/output-roadmap.png" width="800"/>
+  <img src="./docs/output-roadmap.png" width="500" height="300"/>
 </p>
 
 ---
@@ -526,7 +526,7 @@ Associate Professor, Department of CSE
 ## ✍️ Tailored Resume Output
 
 <p align="center">
-  <img src="./docs/output-tailored-resume.png" width="800"/>
+  <img src="./docs/output-tailored-resume.png" width="500" height="300"/>
 </p>
 
 ---
@@ -563,6 +563,6 @@ for their support and guidance throughout the development of HireSense.
 
 # 🌟 HireSense — Empowering Careers with AI 🌟
 
-Made with ❤️ using AI + Full Stack Technologies
+Made using AI + Full Stack Technologies
 
 </div>
