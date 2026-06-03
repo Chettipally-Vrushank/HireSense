@@ -562,7 +562,4 @@ for their support and guidance throughout the development of HireSense.
 <div align="center">
 
 # 🌟 HireSense — Empowering Careers with AI 🌟
-
-Made using AI + Full Stack Technologies
-
 </div>
